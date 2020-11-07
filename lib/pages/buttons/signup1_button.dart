@@ -1,8 +1,18 @@
+import 'package:app_cnpm/blocs/register_bloc.dart';
 import 'package:app_cnpm/pages/signup_page.dart';
+import 'package:app_cnpm/repositories/user_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignUpButton1 extends StatelessWidget {
+  final UserRepository _userRepository;
+
+  SignUpButton1({Key key, @required UserRepository userRepository})
+      : assert(userRepository != null),
+        _userRepository = userRepository,
+        super(key: key);
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -20,9 +30,15 @@ class SignUpButton1 extends StatelessWidget {
               color: Colors.orangeAccent,
               fontWeight: FontWeight.bold),
         ),
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => SignUpPage()));
+        onPressed: (){
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) {
+              return BlocProvider<RegisterBloc>(
+                  create: (context) => RegisterBloc(userRepository: _userRepository),
+                  child: SignUpPage(userRepository: _userRepository)
+              );
+            }),
+          );
         },
       ),
     );

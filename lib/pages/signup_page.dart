@@ -1,115 +1,234 @@
-
+import 'package:app_cnpm/blocs/authentication_bloc.dart';
+import 'package:app_cnpm/blocs/register_bloc.dart';
+import 'package:app_cnpm/events/authentication_event.dart';
+import 'package:app_cnpm/events/register_event.dart';
+import 'package:app_cnpm/repositories/user_repository.dart';
+import 'package:app_cnpm/states/register_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'buttons/signup2_button.dart';
 
 class SignUpPage extends StatefulWidget {
+  final UserRepository _userRepository;
+
+  const SignUpPage({Key key, UserRepository userRepository})
+      : _userRepository = userRepository,
+        super(key: key);
+
   @override
-  State<StatefulWidget> createState() => _SignUpPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  @override
   bool _showPassword = false;
 
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool get isPopulated =>
+      _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
+
+  bool isButtonEnabled(RegisterState state) {
+    return state.isFormValid && isPopulated && !state.isSubmitting;
+  }
+
+  RegisterBloc _registerBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _registerBloc = BlocProvider.of<RegisterBloc>(context);
+    _emailController.addListener(_onEmailChange);
+    _passwordController.addListener(_onPasswordChange);
+  }
+
+  @override
   Widget build(BuildContext context) {
     double deviseWidth = MediaQuery.of(context).size.width;
     // TODO: implement build
     return Scaffold(
         body: Container(
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("assets/background_app.jpg"),
-                  fit: BoxFit.cover)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/logo.png',
-                height: 70,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
-                child: TextFormField(
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                      icon: Icon(
-                        Icons.email,
-                        color: Colors.greenAccent,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/background_app.jpg"),
+                    fit: BoxFit.cover)),
+            child: BlocListener<RegisterBloc, RegisterState>(
+                listener: (context, state) {
+              if (state.isFailure) {
+                Scaffold.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text('Register Failure'),
+                          Icon(Icons.error),
+                        ],
                       ),
-                      labelText: "Enter your Email",
-                      labelStyle: TextStyle(
-                          color: Colors.greenAccent, fontWeight: FontWeight.bold)),
-                  keyboardType: TextInputType.emailAddress,
-                  autovalidate: true,
-                  autocorrect: false,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
-                child: TextFormField(
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                      icon: Icon(
-                        Icons.lock,
-                        color: Colors.greenAccent,
+                      backgroundColor: Color(0xffffae88),
+                    ),
+                  );
+              }
+
+              if (state.isSubmitting) {
+                Scaffold.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text('Registering...'),
+                          CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          )
+                        ],
                       ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          Icons.remove_red_eye,
-                          color:
-                          this._showPassword ? Colors.redAccent : Colors.grey,
-                        ),
-                        onPressed: () {
-                          setState(() => this._showPassword = !this._showPassword);
+                      backgroundColor: Color(0xffffae88),
+                    ),
+                  );
+              }
+
+              if (state.isSuccess) {
+                BlocProvider.of<AuthenticationBloc>(context).add(
+                  AuthenticationLoggedIn(),
+                );
+                Navigator.pop(context);
+              }
+            }, child: BlocBuilder<RegisterBloc, RegisterState>(
+              builder: (context, state) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/logo.png',
+                      height: 70,
+                    ),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+                      child: TextFormField(
+                        controller: _emailController,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                            icon: Icon(
+                              Icons.email,
+                              color: Colors.greenAccent,
+                            ),
+                            labelText: "Enter your Email",
+                            labelStyle: TextStyle(
+                                color: Colors.greenAccent,
+                                fontWeight: FontWeight.bold)),
+                        keyboardType: TextInputType.emailAddress,
+                        autovalidate: true,
+                        autocorrect: false,
+                        validator: (_) {
+                          return !state.isEmailValid ? 'Invalid Email' : null;
                         },
                       ),
-                      labelText: "Enter your Password",
-                      labelStyle: TextStyle(
-                          color: Colors.greenAccent, fontWeight: FontWeight.bold)),
-                  obscureText: !this._showPassword,
-                  autovalidate: true,
-                  autocorrect: false,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
-                child: TextFormField(
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                      icon: Icon(
-                        Icons.lock,
-                        color: Colors.greenAccent,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          Icons.remove_red_eye,
-                          color:
-                          this._showPassword ? Colors.redAccent : Colors.grey,
-                        ),
-                        onPressed: () {
-                          setState(() => this._showPassword = !this._showPassword);
+                    ),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
+                      child: TextFormField(
+                        controller: _passwordController,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                            icon: Icon(
+                              Icons.lock,
+                              color: Colors.greenAccent,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                Icons.remove_red_eye,
+                                color: this._showPassword
+                                    ? Colors.redAccent
+                                    : Colors.grey,
+                              ),
+                              onPressed: () {
+                                setState(() =>
+                                    this._showPassword = !this._showPassword);
+                              },
+                            ),
+                            labelText: "Enter your Password",
+                            labelStyle: TextStyle(
+                                color: Colors.greenAccent,
+                                fontWeight: FontWeight.bold)),
+                        obscureText: !this._showPassword,
+                        autovalidate: true,
+                        autocorrect: false,
+                        validator: (_) {
+                          return !state.isPasswordValid ? 'Invalid Password' : null;
                         },
                       ),
-                      labelText: "Confirm your Password",
-                      labelStyle: TextStyle(
-                          color: Colors.greenAccent, fontWeight: FontWeight.bold)),
-                  obscureText: !this._showPassword,
-                  autovalidate: true,
-                  autocorrect: false,
-                ),
-              ),
-              Padding(padding: EdgeInsets.symmetric(vertical: 15),),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 80),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: SignUpButton2(),
-                ),
-              ),
-            ],
-          ),
-        ));
+                    ),
+                    // Padding(
+                    //   padding:
+                    //       EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
+                    //   child: TextFormField(
+                    //     style: TextStyle(color: Colors.white),
+                    //     decoration: InputDecoration(
+                    //         icon: Icon(
+                    //           Icons.lock,
+                    //           color: Colors.greenAccent,
+                    //         ),
+                    //         suffixIcon: IconButton(
+                    //           icon: Icon(
+                    //             Icons.remove_red_eye,
+                    //             color: this._showPassword
+                    //                 ? Colors.redAccent
+                    //                 : Colors.grey,
+                    //           ),
+                    //           onPressed: () {
+                    //             setState(() =>
+                    //                 this._showPassword = !this._showPassword);
+                    //           },
+                    //         ),
+                    //         labelText: "Confirm your Password",
+                    //         labelStyle: TextStyle(
+                    //             color: Colors.greenAccent,
+                    //             fontWeight: FontWeight.bold)),
+                    //     obscureText: !this._showPassword,
+                    //     autovalidate: true,
+                    //     autocorrect: false,
+                    //   ),
+                    // ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 80),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: SignUpButton2(onPressed: (){
+                          if (isButtonEnabled(state)) {
+                            _onFormSubmitted();
+                          }
+                        },),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ))));
+  }
+
+  void _onEmailChange() {
+    _registerBloc.add(RegisterEmailChanged(email: _emailController.text));
+  }
+
+  void _onPasswordChange() {
+    _registerBloc
+        .add(RegisterPasswordChanged(password: _passwordController.text));
+  }
+
+  void _onFormSubmitted() {
+    FocusScope.of(context).unfocus();
+    _registerBloc.add(RegisterSubmitted(
+        email: _emailController.text, password: _passwordController.text));
   }
 }

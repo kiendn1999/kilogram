@@ -3,6 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SignUpButton2 extends StatelessWidget {
+  final Function onPressed;
+
+  const SignUpButton2({this.onPressed});
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -20,7 +24,7 @@ class SignUpButton2 extends StatelessWidget {
               color: Colors.orangeAccent,
               fontWeight: FontWeight.bold),
         ),
-        onPressed: () {},
+        onPressed: this.onPressed,
       ),
     );
   }

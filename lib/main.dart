@@ -1,35 +1,69 @@
+import 'package:app_cnpm/pages/home_page.dart';
 import 'package:app_cnpm/pages/login_page.dart';
-import 'package:app_cnpm/pages/signup_page.dart';
-import 'package:app_cnpm/pages/splash_page.dart';
+import 'package:app_cnpm/repositories/user_repository.dart';
+import 'package:app_cnpm/states/authentication_state.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
-  runApp(MyApp());
+import 'blocs/authentication_bloc.dart';
+import 'blocs/login_bloc.dart';
+import 'blocs/simple_bloc_observer.dart';
+import 'events/authentication_event.dart';
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  Bloc.observer = SimpleBlocObserver();
+  await Firebase.initializeApp();
+  final UserRepository userRepository = UserRepository();
+  runApp(
+    BlocProvider(
+      create: (context) => AuthenticationBloc(
+        userRepository: userRepository,
+      )..add(AuthenticationStarted()),
+      child: MyApp(
+        userRepository: userRepository,
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  final UserRepository _userRepository;
+
+  MyApp({UserRepository userRepository}) : _userRepository = userRepository;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Instagram clone',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-        // This makes the visual density adapt to the platform that you run
-        // the app on. For desktop platforms, the controls will be smaller and
-        // closer together (more dense) than on mobile platforms.
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+      debugShowCheckedModeBanner: false,
+      title: 'Kilogram',
+      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
+          if (state is AuthenticationFailure) {
+            return BlocProvider<LoginBloc>(
+              create: (context) => LoginBloc(userRepository: _userRepository),
+              child: LoginPage(
+                userRepository: _userRepository,
+              ),
+            );
+          }
+
+          if (state is AuthenticationSuccess) {
+            return HomePage(
+              user: state.firebaseUser,
+            );
+          }
+
+          return Scaffold(
+            appBar: AppBar(),
+            body: Container(
+              child: Center(child: Text("Loading")),
+            ),
+          );
+        },
       ),
-      home: SplashPage(),
     );
   }
 }
