@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatelessWidget {
-  final FirebaseUser user;
+  final User user;
 
   const HomePage({Key key, this.user}) : super(key: key);
 

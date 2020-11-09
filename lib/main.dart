@@ -1,5 +1,6 @@
 import 'package:app_cnpm/pages/home_page.dart';
 import 'package:app_cnpm/pages/login_page.dart';
+import 'package:app_cnpm/pages/splash_page.dart';
 import 'package:app_cnpm/repositories/user_repository.dart';
 import 'package:app_cnpm/states/authentication_state.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,7 +13,7 @@ import 'blocs/login_bloc.dart';
 import 'blocs/simple_bloc_observer.dart';
 import 'events/authentication_event.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = SimpleBlocObserver();
   await Firebase.initializeApp();
@@ -39,8 +40,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Kilogram',
-      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+      home: SplashPage(navigateAfterSecond:
+          BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
+          print(state);
           if (state is AuthenticationFailure) {
             return BlocProvider<LoginBloc>(
               create: (context) => LoginBloc(userRepository: _userRepository),
@@ -63,7 +66,7 @@ class MyApp extends StatelessWidget {
             ),
           );
         },
-      ),
+      )),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:app_cnpm/events/authentication_event.dart';
 import 'package:app_cnpm/repositories/user_repository.dart';
 import 'package:app_cnpm/states/authentication_state.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthenticationBloc
@@ -38,7 +39,7 @@ class AuthenticationBloc
   Stream<AuthenticationState> _mapAuthenticationStartedToState() async* {
     final isSignedIn = await _userRepository.isSignedIn();
     if (isSignedIn) {
-      final firebaseUser = await _userRepository.getUser();
+      final  firebaseUser = await _userRepository.getUser();
       yield AuthenticationSuccess(firebaseUser);
     } else {
       yield AuthenticationFailure();
