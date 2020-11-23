@@ -26,12 +26,20 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPass = TextEditingController();
 
   bool get isPopulated =>
-      _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
+      _emailController.text.isNotEmpty &&
+      _passwordController.text.isNotEmpty &&
+      _confirmPass.text.isNotEmpty;
+
+  bool isCorrectConfirm = false;
 
   bool isButtonEnabled(RegisterState state) {
-    return state.isFormValid && isPopulated && !state.isSubmitting;
+    return state.isFormValid &&
+        isPopulated &&
+        !state.isSubmitting &&
+        isCorrectConfirm;
   }
 
   RegisterBloc _registerBloc;
@@ -162,41 +170,52 @@ class _SignUpPageState extends State<SignUpPage> {
                         autovalidate: true,
                         autocorrect: false,
                         validator: (_) {
-                          return !state.isPasswordValid ? 'Invalid Password' : null;
+                          return !state.isPasswordValid
+                              ? 'Invalid Password'
+                              : null;
                         },
                       ),
                     ),
-                    // Padding(
-                    //   padding:
-                    //       EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
-                    //   child: TextFormField(
-                    //     style: TextStyle(color: Colors.white),
-                    //     decoration: InputDecoration(
-                    //         icon: Icon(
-                    //           Icons.lock,
-                    //           color: Colors.greenAccent,
-                    //         ),
-                    //         suffixIcon: IconButton(
-                    //           icon: Icon(
-                    //             Icons.remove_red_eye,
-                    //             color: this._showPassword
-                    //                 ? Colors.redAccent
-                    //                 : Colors.grey,
-                    //           ),
-                    //           onPressed: () {
-                    //             setState(() =>
-                    //                 this._showPassword = !this._showPassword);
-                    //           },
-                    //         ),
-                    //         labelText: "Confirm your Password",
-                    //         labelStyle: TextStyle(
-                    //             color: Colors.greenAccent,
-                    //             fontWeight: FontWeight.bold)),
-                    //     obscureText: !this._showPassword,
-                    //     autovalidate: true,
-                    //     autocorrect: false,
-                    //   ),
-                    // ),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
+                      child: TextFormField(
+                        controller: _confirmPass,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                            icon: Icon(
+                              Icons.lock,
+                              color: Colors.greenAccent,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                Icons.remove_red_eye,
+                                color: this._showPassword
+                                    ? Colors.redAccent
+                                    : Colors.grey,
+                              ),
+                              onPressed: () {
+                                setState(() =>
+                                    this._showPassword = !this._showPassword);
+                              },
+                            ),
+                            labelText: "Confirm your Password",
+                            labelStyle: TextStyle(
+                                color: Colors.greenAccent,
+                                fontWeight: FontWeight.bold)),
+                        obscureText: !this._showPassword,
+                        autovalidate: true,
+                        autocorrect: false,
+                        validator: (val) {
+                          if (val != _passwordController.text) {
+                            isCorrectConfirm = false;
+                            return 'Not Match';
+                          } else
+                            isCorrectConfirm = true;
+                          return null;
+                        },
+                      ),
+                    ),
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 15),
                     ),
@@ -204,11 +223,13 @@ class _SignUpPageState extends State<SignUpPage> {
                       padding: EdgeInsets.symmetric(horizontal: 80),
                       child: SizedBox(
                         width: double.infinity,
-                        child: SignUpButton2(onPressed: (){
-                          if (isButtonEnabled(state)) {
-                            _onFormSubmitted();
-                          }
-                        },),
+                        child: SignUpButton2(
+                          onPressed: () {
+                            if (isButtonEnabled(state)) {
+                              _onFormSubmitted();
+                            }
+                          },
+                        ),
                       ),
                     ),
                   ],

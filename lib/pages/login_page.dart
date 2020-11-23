@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     _loginBloc = BlocProvider.of<LoginBloc>(context);
     _emailController.addListener(_onEmailChange);
-    _passwordController.addListener(_onPasswordChange);
+    //
   }
 
   @override
@@ -209,6 +209,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _onFormSubmitted() {
     FocusScope.of(context).unfocus();
+    _passwordController.addListener(_onPasswordChange);
     _loginBloc.add(LoginWithCredentialsPressed(
         email: _emailController.text, password: _passwordController.text));
   }
