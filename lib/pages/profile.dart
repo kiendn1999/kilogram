@@ -1,5 +1,6 @@
 import 'package:app_cnpm/models/Post.dart';
 import 'package:app_cnpm/models/posts_data.dart';
+import 'package:app_cnpm/pages/edit_profile.dart';
 import 'package:app_cnpm/pages/post_page.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +25,7 @@ class _Profile extends State<Profile>{
           children: <Widget>[
             //Info
             Container(
+              height: 290,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -33,17 +35,35 @@ class _Profile extends State<Profile>{
               ),
               child: Container(
                 width: double.infinity,
-                height: 250.0,
+                height: double.infinity,
                 child: Center(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       //avatar
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(widget.ipost.userImage
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              width: 4,
+                              color: Theme.of(context).scaffoldBackgroundColor
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                                spreadRadius: 2, blurRadius: 10,
+                                color: Colors.black.withOpacity(0.1),
+                                offset: Offset(0, 10)
+                            ),
+                          ],
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage("https://upload.wikimedia.org/wikipedia/commons/a/a0/Pierre-Person.jpg")
+                              // image: NetworkImage(widget.ipost.userImage)
+                          ),
                         ),
-                        radius: 45,
                       ),
 
                       //username
@@ -55,10 +75,24 @@ class _Profile extends State<Profile>{
                         ),
                       ),
                       SizedBox(height: 10,),
+                      RaisedButton(
+                        onPressed: (){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>EditProfile()));
+                        },
+                        color: Colors.red,
+                        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10)),
+                        child: Text('Edit Profile',
+                          style: TextStyle(
+                          color: Colors.white
+                          ),
+                        ),
+                        
+                      ),
                       Card(
-                        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 3),
                         clipBehavior: Clip.antiAlias,
                         color: Colors.black,
+                        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10)),
                         elevation: 8,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
