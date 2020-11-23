@@ -11,16 +11,18 @@ class _EditProfile extends State<EditProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        color: Colors.black,
         child: Padding(
           padding: const EdgeInsets.only(left: 16, top: 25, right: 16),
           child: ListView(
             children: [
               Text('Edit Profile',
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),),
+              style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w500),),
               SizedBox(height: 15,),
               Center(
                 child: Stack(
                   children: [
+                    //avatar
                     Container(
                       width: 130,
                       height: 130,
@@ -43,6 +45,7 @@ class _EditProfile extends State<EditProfile> {
                         ),
                       ),
                     ),
+                    //edit avatar
                     Positioned(
                       bottom: 0,
                       right: 0,
