@@ -26,6 +26,7 @@ class _CustomProfile extends State<CustomProfile> {
           children: <Widget>[
             //Info
             Container(
+              height: 290,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -34,16 +35,48 @@ class _CustomProfile extends State<CustomProfile> {
                   )),
               child: Container(
                 width: double.infinity,
-                height: 250.0,
+                height: double.infinity,
                 child: Center(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       //avatar
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(widget.ipost.userImage),
-                        radius: 45,
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              width: 4,
+                              color: Theme.of(context).scaffoldBackgroundColor
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                                spreadRadius: 2, blurRadius: 10,
+                                color: Colors.black.withOpacity(0.1),
+                                offset: Offset(0, 10)
+                            ),
+                          ],
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage("https://upload.wikimedia.org/wikipedia/commons/a/a0/Pierre-Person.jpg")
+                            // image: NetworkImage(widget.ipost.userImage)
+                          ),
+                        ),
+                      ),
+
+                      //Follow button
+                      RaisedButton(
+                        onPressed: (){},
+                        color: Colors.red,
+                        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10)),
+                        child: Text('Follow',
+                          style: TextStyle(
+                              color: Colors.white
+                          ),
+                        ),
+
                       ),
 
                       //username

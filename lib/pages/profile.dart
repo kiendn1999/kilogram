@@ -75,6 +75,8 @@ class _Profile extends State<Profile>{
                         ),
                       ),
                       SizedBox(height: 10,),
+
+                      //edit buton
                       RaisedButton(
                         onPressed: (){
                           Navigator.of(context).push(MaterialPageRoute(builder: (context)=>EditProfile()));
