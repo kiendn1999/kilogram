@@ -6,7 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
-class Feed extends StatelessWidget {
+class Feed extends StatefulWidget {
+  @override
+  _Feed createState() => _Feed();
+}
+
+class _Feed extends State<Feed> {
+  bool _liked = false;
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -158,8 +165,15 @@ class Feed extends StatelessWidget {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        onPressed: () {},
-                        icon: Icon(
+                        onPressed: () {
+                          setState(() => this._liked = !this._liked);
+                        },
+                        icon: this._liked
+                            ? Icon(
+                          FontAwesome.heart,
+                          color: Colors.redAccent,
+                        )
+                            : Icon(
                           FontAwesome.heart_o,
                           color: Colors.white,
                         ),
@@ -247,11 +261,18 @@ class Feed extends StatelessWidget {
                             ]),
                           )),
                       IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          FontAwesome.heart_o,
-                          color: Colors.white,
-                        ),
+                        onPressed: () {
+                          setState(() => this._liked = !this._liked);
+                        },
+                        icon: this._liked
+                            ? Icon(
+                                FontAwesome.heart,
+                                color: Colors.redAccent,
+                              )
+                            : Icon(
+                                FontAwesome.heart_o,
+                                color: Colors.white,
+                              ),
                       ),
                     ],
                   ),

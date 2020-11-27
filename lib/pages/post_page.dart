@@ -17,6 +17,7 @@ class PostPage extends StatefulWidget {
 }
 
 class _PostPage extends State<PostPage> {
+  bool _liked=false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,8 +100,15 @@ class _PostPage extends State<PostPage> {
                       Row(
                         children: <Widget>[
                           IconButton(
-                            onPressed: () {},
-                            icon: Icon(
+                            onPressed: () {
+                              setState(() => this._liked = !this._liked);
+                            },
+                            icon: this._liked
+                                ? Icon(
+                              FontAwesome.heart,
+                              color: Colors.redAccent,
+                            )
+                                : Icon(
                               FontAwesome.heart_o,
                               color: Colors.white,
                             ),
@@ -195,7 +203,7 @@ class _PostPage extends State<PostPage> {
                                     },
                                   );
                                 },
-                                animationType: DialogTransitionType.size,
+                                animationType: DialogTransitionType.slideFromTop,
                                 curve: Curves.fastOutSlowIn,
                                 duration: Duration(seconds: 1),
                               );
