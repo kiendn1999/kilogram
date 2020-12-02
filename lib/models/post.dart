@@ -1,8 +1,9 @@
 class Post {
-  int id;
+  int postID;
+  int authorID;
 
-  // String userImage;
-  // String username;
+  String userImage;
+  String username;
 
   String postImage;
   int likeCount;
@@ -13,7 +14,8 @@ class Post {
   List<String> comments = new List();
 
   Post({
-    this.id,
+    this.postID,
+    this.authorID,
 
     // this.userImage,
     // this.username,
