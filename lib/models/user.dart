@@ -6,7 +6,9 @@ class User {
   String userImage;
   String email;
   String password;
-  List<Post> posts = new List();
+  int followerCount;
+  int followeeCount;
+
 
 
   User({
@@ -15,6 +17,8 @@ class User {
     this.userImage,
     this.email,
     this.password,
+    this.followerCount,
+    this.followeeCount
 
 });
 }
