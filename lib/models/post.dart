@@ -1,8 +1,8 @@
 class Post {
   int id;
 
-  String userImage;
-  String username;
+  // String userImage;
+  // String username;
 
   String postImage;
   int likeCount;
@@ -15,8 +15,8 @@ class Post {
   Post({
     this.id,
 
-    this.userImage,
-    this.username,
+    // this.userImage,
+    // this.username,
 
     this.postImage,
     this.caption,
