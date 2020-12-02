@@ -1,4 +1,4 @@
-import 'package:app_cnpm/models/Post.dart';
+import 'package:app_cnpm/models/post.dart';
 import 'package:app_cnpm/models/posts_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

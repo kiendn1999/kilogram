@@ -1,4 +1,4 @@
-import 'package:app_cnpm/models/Post.dart';
+import 'package:app_cnpm/models/post.dart';
 import 'package:app_cnpm/models/posts_data.dart';
 import 'package:app_cnpm/pages/edit_profile.dart';
 import 'package:app_cnpm/pages/followers_page.dart';

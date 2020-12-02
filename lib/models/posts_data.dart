@@ -1,4 +1,4 @@
-import 'Post.dart';
+import 'post.dart';
 
 List<Post> posts = [
   Post(
