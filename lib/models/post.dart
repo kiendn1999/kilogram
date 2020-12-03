@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'comment.dart';
+import 'like.dart';
 import 'user.dart';
 class Post {
   int postID;

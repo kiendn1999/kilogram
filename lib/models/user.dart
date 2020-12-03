@@ -1,6 +1,8 @@
 import 'package:app_cnpm/models/post.dart';
 
-import 'Post.dart';
+import 'follow.dart';
+import 'post.dart';
+import 'comment.dart';
 
 class User {
   String id;
@@ -36,6 +38,7 @@ class User {
         password = json['password'],
         followerCount = json['followerCount'],
         followeeCount = json['followeeCount'];
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'username': username,
