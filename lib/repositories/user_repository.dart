@@ -26,7 +26,7 @@ class UserRepository {
       return "fail";
   }
 
-  Future<bool> checkLoginCredentials(String email, String password) async {
+  Future<String> checkLoginCredentials(String email, String password) async {
     String url = 'http://192.168.1.7:3000/users/signin';
 
     final response = await ServerOperation().postDataToServer(
@@ -37,10 +37,10 @@ class UserRepository {
     if (response.statusCode == 201 &&
         jsonDecode(response.body)['success'] == true) {
       isLogined = true;
-      return true;
+      return "true";
     }
 
-    return false;
+    return "false";
   }
 
 // Future<bool> checkIfUserExists(User user) async {

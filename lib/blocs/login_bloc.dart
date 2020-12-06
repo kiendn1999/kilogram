@@ -35,7 +35,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> _mapLoginWithCredentialsPressedToState(
       {String email, String password}) async* {
     yield LoginState.loading();
-    if(await _userRepository.checkLoginCredentials(email, password)==true) {
+    if(await _userRepository.checkLoginCredentials(email, password)=="true") {
       yield LoginState.success();
     } else {
       yield LoginState.failure();
