@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                     image: AssetImage("assets/background_app.jpg"),
                     fit: BoxFit.cover)),
             child: BlocListener<LoginBloc, LoginState>(listener:
-                (context, state) {
+                (context, state) async{
               if (state.isFailure) {
                 Scaffold.of(context)
                   ..removeCurrentSnackBar()
@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                       content: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text('Login Failure'),
+                          Text(await widget._userRepository.checkLoginCredentials(_emailController.text, _passwordController.text)),
                           Icon(Icons.error),
                         ],
                       ),

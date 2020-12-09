@@ -12,7 +12,7 @@ class ServerOperation {
   Future<http.Response> postDataToServer(String url, var json) async {
     return await http.post(
       url,
-      headers: <String, String>{
+      headers:  <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: json,

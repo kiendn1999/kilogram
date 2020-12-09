@@ -67,7 +67,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     image: AssetImage("assets/background_app.jpg"),
                     fit: BoxFit.cover)),
             child: BlocListener<RegisterBloc, RegisterState>(
-                listener: (context, state) {
+                listener: (context, state) async {
               if (state.isFailure) {
                 Scaffold.of(context)
                   ..removeCurrentSnackBar()
@@ -76,7 +76,11 @@ class _SignUpPageState extends State<SignUpPage> {
                       content: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text('Register Failure'),
+                          Text(await widget._userRepository.registerUser(
+                              _lastNameController.text,
+                              _firstNameController.text,
+                              _emailController.text,
+                              _passwordController.text)),
                           Icon(Icons.error),
                         ],
                       ),

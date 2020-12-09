@@ -15,15 +15,15 @@ class UserRepository {
         jsonEncode(<String, String>{
           'firstName': firstName,
           'lastName': lastName,
-          'username': email,
+          'email': email,
           'password': password
         }));
 
     if (response.statusCode == 201 &&
         jsonDecode(response.body)['success'] == true) {
-      return "success";
+      return "true";
     } else
-      return "fail";
+      return  jsonDecode(response.body)['error']['message'];
   }
 
   Future<String> checkLoginCredentials(String email, String password) async {
@@ -39,8 +39,7 @@ class UserRepository {
       isLogined = true;
       return "true";
     }
-
-    return "false";
+    return jsonDecode(response.body)['error']['message'];
   }
 
 // Future<bool> checkIfUserExists(User user) async {
