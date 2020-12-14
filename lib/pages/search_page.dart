@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kilogram_app/models/posts_data.dart';
+import 'package:kilogram_app/pages/custom_profile.dart';
 import 'package:kilogram_app/pages/profile.dart';
 
 class SearchPage extends StatefulWidget {
@@ -26,7 +27,7 @@ class _SearchPageState extends State<SearchPage> {
             context,
             MaterialPageRoute(
               builder: (_) =>
-                  Profile(ipost: ipost,
+                  CustomProfile(ipost: ipost,
                   ),
             ),
           ),

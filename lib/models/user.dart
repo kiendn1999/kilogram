@@ -3,14 +3,15 @@ import 'post.dart';
 import 'comment.dart';
 
 class User {
-  int userID;
+  String userID;
   String lastName;
   String firstName;
-  String userImage;
+  //String userImage;
   String email;
-  String password;
+  //String password;
   int followerCount;
   int followeeCount;
+  String avatar;
 
   List<Post1> posts = new List();
   List<Comment> comments = new List();
@@ -23,32 +24,35 @@ class User {
     this.userID,
     this.lastName,
     this.firstName,
-    this.userImage,
+    //this.userImage,
     this.email,
-    this.password,
-    this.followerCount,
-    this.followeeCount
+    this.avatar
+    //this.password,
+    // this.followerCount,
+    // this.followeeCount
 });
 
-  factory User.fromJson(Map<String, dynamic> parsedJson) {
+  factory User.fromJson(Map<String, dynamic> json) {
     return User(
-        userID: parsedJson['userID'],
-        lastName: parsedJson['lastName'].toString(),
-        firstName: parsedJson['firstName'].toString(),
-        email: parsedJson['email'].toString(),
-        password: parsedJson['password'].toString(),
-        followerCount: parsedJson['password'],
-        followeeCount: parsedJson['followeeCount']);
+      userID: json['_id'],
+      lastName: json['lastName'],
+      firstName: json['firstName'],
+      email: json['email'],
+      avatar: json['avatar'],
+    );
   }
+
+
 
   Map<String, dynamic> toJson() => {
     'userID': userID,
     'lastName': lastName,
     'firstName': firstName,
-    'userImage': userImage,
+    //'userImage': userImage,
     'email': email,
-    'password': password,
-    'followerCount': followerCount,
-    'followeeCount': followeeCount,
+    'avatar': avatar,
+    //'password': password,
+    // 'followerCount': followerCount,
+    // 'followeeCount': followeeCount,
   };
 }

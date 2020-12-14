@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ServerOperation {
-  Future<http.Response> getDataFromServer(String url,
-      {Map<String, String> headers}) async {
+  Future<http.Response> getDataFromServer(String url,/*
+      {Map<String, String> headers}*/) async {
     return await http.get(url);
   }
 

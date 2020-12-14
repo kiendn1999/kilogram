@@ -1,8 +1,12 @@
 import 'dart:convert';
+import 'package:kilogram_app/models/post.dart';
+import 'package:kilogram_app/models/user.dart';
+
 import 'serveroperations.dart';
 
 class UserRepository {
   bool isLogined = false;
+  String _getUserID;
 
   //CustomCacheManager customCacheManager = CustomCacheManager();
 
@@ -19,11 +23,11 @@ class UserRepository {
           'password': password
         }));
 
-    if (response.statusCode == 201 &&
-        jsonDecode(response.body)['success'] == true) {
+    if (response.statusCode == 201) {
+      _getUserID = jsonDecode(response.body)['_id'];
       return "true";
     } else
-      return  jsonDecode(response.body)['error']['message'];
+      return jsonDecode(response.body)['error']['message'];
   }
 
   Future<String> checkLoginCredentials(String email, String password) async {
@@ -35,11 +39,23 @@ class UserRepository {
     );
 
     if (response.statusCode == 201 &&
-        jsonDecode(response.body)['success'] == true) {
+        jsonDecode(response.body)['_id'] != null) {
       isLogined = true;
+      _getUserID = jsonDecode(response.body)['_id'];
       return "true";
     }
     return jsonDecode(response.body)['error']['message'];
+  }
+
+  Future<User> getInfoUser() async {
+    String url = 'http://192.168.1.7:3000/users/$_getUserID';
+    print(_getUserID);
+    final response = await ServerOperation().getDataFromServer(url);
+
+    if (response.statusCode == 200) {
+
+      return User.fromJson(jsonDecode(response.body)['user']);
+    }else throw Exception('Failed to load User');
   }
 
 // Future<bool> checkIfUserExists(User user) async {

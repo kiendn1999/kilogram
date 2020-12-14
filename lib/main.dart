@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
 
           if (state is AuthenticationSuccess) {
             return HomePage(
-              //user: state.firebaseUser,
+              userRepository: _userRepository,
             );
           }
 

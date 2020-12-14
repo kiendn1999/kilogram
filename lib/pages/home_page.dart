@@ -7,6 +7,7 @@ import 'package:kilogram_app/events/authentication_event.dart';
 import 'package:kilogram_app/models/posts_data.dart';
 import 'package:kilogram_app/pages/profile.dart';
 import 'package:kilogram_app/pages/search_page.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
 
 import 'activity_page.dart';
 import 'createpost_page.dart';
@@ -18,20 +19,34 @@ class HomePage extends StatefulWidget {
   // final User user;
   //
   // const HomePage({Key key, this.user}) : super(key: key);
+  final UserRepository _userRepository;
+
+  const HomePage({Key key, UserRepository userRepository})
+      : _userRepository = userRepository,
+        super(key: key);
   @override
   State<StatefulWidget> createState() => _HomeStatePage();
+
 
 }
 
 class _HomeStatePage extends State<HomePage>{
 
-  var _pages = [
-    Feed(),
-    SearchPage(),
-    CreatePostPage(),
-    ActivityPage(),
-    Profile(ipost: posts[2],),
-  ];
+
+  var _pages;
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      Feed(),
+      SearchPage(),
+      CreatePostPage(),
+      ActivityPage(),
+      Profile(userRepository: widget._userRepository)
+    ];
+  }
+
+
   var _pageController = PageController();
 
 
