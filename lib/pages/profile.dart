@@ -97,7 +97,7 @@ class _Profile extends State<Profile> {
 
                             //username
                             Text(
-                              snapshot.data.firstName,
+                              snapshot.data.firstName + ' ' + snapshot.data.lastName,
                               style:
                                   TextStyle(fontSize: 22, color: Colors.white),
                             ),
@@ -109,7 +109,7 @@ class _Profile extends State<Profile> {
                             RaisedButton(
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => EditProfile()));
+                                    builder: (context) => EditProfile(userRepository: widget._userRepository)));
                               },
                               color: Colors.red,
                               shape: new RoundedRectangleBorder(
@@ -234,8 +234,7 @@ class _Profile extends State<Profile> {
                   //Posts
                   Container(
                       child: FutureBuilder<List<Post1>>(
-                          future: PostRepository()
-                              .getAllPostsinUser(snapshot.data.userID),
+                          future: PostRepository().getAllPostsinUser(snapshot.data.userID),
                           builder: (context, snapshot1) {
                             return GridView.builder(
                                 shrinkWrap: true,
