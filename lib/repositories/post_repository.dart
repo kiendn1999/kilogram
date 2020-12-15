@@ -6,7 +6,7 @@ import 'serveroperations.dart';
 
 class PostRepository{
   Future<List<Post1>> getAllPostsinUser(String userID, int pageKey) async {
-    String url = 'http://192.168.31.204:3000/users/$userID/posts?page=$pageKey';
+    String url = 'http://192.168.1.5:3000/users/$userID/posts?page=$pageKey';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
