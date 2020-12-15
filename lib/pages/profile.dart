@@ -93,7 +93,7 @@ class _Profile extends State<Profile> {
 
                           //username
                           Text(
-                            snapshot.data.firstName,
+                            snapshot.data.firstName + ' ' + snapshot.data.lastName,
                             style: TextStyle(fontSize: 22, color: Colors.white),
                           ),
                           SizedBox(
@@ -104,7 +104,7 @@ class _Profile extends State<Profile> {
                           RaisedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => EditProfile()));
+                                  builder: (context) => EditProfile(userRepository: widget._userRepository)));
                             },
                             color: Colors.red,
                             shape: new RoundedRectangleBorder(
