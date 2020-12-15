@@ -1,4 +1,4 @@
-# app_cnpm
+# kilogram_app
 
 A new Flutter application.
 

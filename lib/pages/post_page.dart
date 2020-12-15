@@ -1,11 +1,12 @@
-import 'package:app_cnpm/models/post.dart';
-import 'package:app_cnpm/pages/likes_page.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
+import '../models/posts_data.dart';
 import 'comments_page.dart';
+import 'likes_page.dart';
 
 class PostPage extends StatefulWidget {
   final Post post;

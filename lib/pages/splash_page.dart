@@ -1,4 +1,3 @@
-import 'package:app_cnpm/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
 

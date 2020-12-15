@@ -1,9 +1,10 @@
-import 'package:app_cnpm/blocs/register_bloc.dart';
-import 'package:app_cnpm/pages/signup_page.dart';
-import 'package:app_cnpm/repositories/user_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kilogram_app/blocs/register_bloc.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
+
+import '../signup_page.dart';
 
 class SignUpButton1 extends StatelessWidget {
   final UserRepository _userRepository;

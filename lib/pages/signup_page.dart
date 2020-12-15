@@ -1,12 +1,12 @@
-import 'package:app_cnpm/blocs/authentication_bloc.dart';
-import 'package:app_cnpm/blocs/register_bloc.dart';
-import 'package:app_cnpm/events/authentication_event.dart';
-import 'package:app_cnpm/events/register_event.dart';
-import 'package:app_cnpm/repositories/user_repository.dart';
-import 'package:app_cnpm/states/register_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kilogram_app/blocs/authentication_bloc.dart';
+import 'package:kilogram_app/blocs/register_bloc.dart';
+import 'package:kilogram_app/events/authentication_event.dart';
+import 'package:kilogram_app/events/register_event.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
+import 'package:kilogram_app/states/register_state.dart';
 
 import 'buttons/signup2_button.dart';
 
@@ -27,11 +27,15 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
 
   bool get isPopulated =>
       _emailController.text.isNotEmpty &&
       _passwordController.text.isNotEmpty &&
-      _confirmPass.text.isNotEmpty;
+      _confirmPass.text.isNotEmpty &&
+      _lastNameController.text.isNotEmpty &&
+      _firstNameController.text.isNotEmpty;
 
   bool isCorrectConfirm = false;
 
@@ -62,52 +66,56 @@ class _SignUpPageState extends State<SignUpPage> {
                 image: DecorationImage(
                     image: AssetImage("assets/background_app.jpg"),
                     fit: BoxFit.cover)),
-            child: BlocListener<RegisterBloc, RegisterState>(
-                listener: (context, state) {
-              if (state.isFailure) {
-                Scaffold.of(context)
-                  ..removeCurrentSnackBar()
-                  ..showSnackBar(
-                    SnackBar(
-                      content: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text('Register Failure'),
-                          Icon(Icons.error),
-                        ],
-                      ),
-                      backgroundColor: Color(0xffffae88),
-                    ),
-                  );
-              }
+            child: Center(child: SingleChildScrollView(child:  BlocListener<RegisterBloc, RegisterState>(
+                listener: (context, state) async {
+                  if (state.isFailure) {
+                    Scaffold.of(context)
+                      ..removeCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(await widget._userRepository.registerUser(
+                                  _lastNameController.text,
+                                  _firstNameController.text,
+                                  _emailController.text,
+                                  _passwordController.text)),
+                              Icon(Icons.error),
+                            ],
+                          ),
+                          backgroundColor: Color(0xffffae88),
+                        ),
+                      );
+                  }
 
-              if (state.isSubmitting) {
-                Scaffold.of(context)
-                  ..removeCurrentSnackBar()
-                  ..showSnackBar(
-                    SnackBar(
-                      content: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text('Registering...'),
-                          CircularProgressIndicator(
-                            valueColor:
+                  if (state.isSubmitting) {
+                    Scaffold.of(context)
+                      ..removeCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text('Registering...'),
+                              CircularProgressIndicator(
+                                valueColor:
                                 AlwaysStoppedAnimation<Color>(Colors.white),
-                          )
-                        ],
-                      ),
-                      backgroundColor: Color(0xffffae88),
-                    ),
-                  );
-              }
+                              )
+                            ],
+                          ),
+                          backgroundColor: Color(0xffffae88),
+                        ),
+                      );
+                  }
 
-              if (state.isSuccess) {
-                BlocProvider.of<AuthenticationBloc>(context).add(
-                  AuthenticationLoggedIn(),
-                );
-                Navigator.pop(context);
-              }
-            }, child: BlocBuilder<RegisterBloc, RegisterState>(
+                  if (state.isSuccess) {
+                    BlocProvider.of<AuthenticationBloc>(context).add(
+                      AuthenticationLoggedIn(),
+                    );
+                    Navigator.pop(context);
+                  }
+                }, child: BlocBuilder<RegisterBloc, RegisterState>(
               builder: (context, state) {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -116,9 +124,65 @@ class _SignUpPageState extends State<SignUpPage> {
                       'assets/logo.png',
                       height: 70,
                     ),
+                    Row(
+                      children: [
+                        Flexible(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 15.0, vertical: 10),
+                              child: TextFormField(
+                                controller: _lastNameController,
+                                style: TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                    icon: Icon(
+                                      Icons.email,
+                                      color: Colors.greenAccent,
+                                    ),
+                                    labelText: "Last Name",
+                                    labelStyle: TextStyle(
+                                        color: Colors.greenAccent,
+                                        fontWeight: FontWeight.bold)),
+                                keyboardType: TextInputType.emailAddress,
+                                autovalidate: true,
+                                autocorrect: false,
+                                validator: (_) {
+                                  return _lastNameController.text.length < 2
+                                      ? 'least 2 characters'
+                                      : null;
+                                },
+                              ),
+                            )),
+                        Flexible(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 15.0, vertical: 10),
+                              child: TextFormField(
+                                controller: _firstNameController,
+                                style: TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                    icon: Icon(
+                                      Icons.email,
+                                      color: Colors.greenAccent,
+                                    ),
+                                    labelText: "First Name",
+                                    labelStyle: TextStyle(
+                                        color: Colors.greenAccent,
+                                        fontWeight: FontWeight.bold)),
+                                keyboardType: TextInputType.emailAddress,
+                                autovalidate: true,
+                                autocorrect: false,
+                                validator: (_) {
+                                  return _firstNameController.text.length < 2
+                                      ? 'least 2 characters'
+                                      : null;
+                                },
+                              ),
+                            )),
+                      ],
+                    ),
                     Padding(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
                       child: TextFormField(
                         controller: _emailController,
                         style: TextStyle(color: Colors.white),
@@ -141,7 +205,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     Padding(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
+                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
                       child: TextFormField(
                         controller: _passwordController,
                         style: TextStyle(color: Colors.white),
@@ -159,7 +223,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               onPressed: () {
                                 setState(() =>
-                                    this._showPassword = !this._showPassword);
+                                this._showPassword = !this._showPassword);
                               },
                             ),
                             labelText: "Enter your Password",
@@ -178,7 +242,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     Padding(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
+                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
                       child: TextFormField(
                         controller: _confirmPass,
                         style: TextStyle(color: Colors.white),
@@ -196,7 +260,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               onPressed: () {
                                 setState(() =>
-                                    this._showPassword = !this._showPassword);
+                                this._showPassword = !this._showPassword);
                               },
                             ),
                             labelText: "Confirm your Password",
@@ -235,7 +299,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ],
                 );
               },
-            ))));
+            ))))));
   }
 
   void _onEmailChange() {
@@ -250,6 +314,9 @@ class _SignUpPageState extends State<SignUpPage> {
   void _onFormSubmitted() {
     FocusScope.of(context).unfocus();
     _registerBloc.add(RegisterSubmitted(
-        email: _emailController.text, password: _passwordController.text));
+        lastName: _lastNameController.text,
+        firstName: _firstNameController.text,
+        email: _emailController.text,
+        password: _passwordController.text));
   }
 }

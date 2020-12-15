@@ -1,7 +1,9 @@
-import 'package:app_cnpm/models/posts_data.dart';
-import 'package:app_cnpm/pages/custom_profile.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:kilogram_app/models/posts_data.dart';
+
+import 'custom_profile.dart';
 
 class LikePage extends StatefulWidget {
   // final DocumentReference documentReference;

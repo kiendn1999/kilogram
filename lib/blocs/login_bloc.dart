@@ -1,8 +1,9 @@
-import 'package:app_cnpm/events/login_event.dart';
-import 'package:app_cnpm/repositories/user_repository.dart';
-import 'package:app_cnpm/states/login_state.dart';
-import 'package:app_cnpm/validators/validators.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kilogram_app/events/login_event.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
+import 'package:kilogram_app/states/login_state.dart';
+import 'package:kilogram_app/validators/validators.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final UserRepository _userRepository;
@@ -34,10 +35,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> _mapLoginWithCredentialsPressedToState(
       {String email, String password}) async* {
     yield LoginState.loading();
-    try {
-      await _userRepository.signInWithCredentials(email, password);
+    if(await _userRepository.checkLoginCredentials(email, password)=="true") {
       yield LoginState.success();
-    } catch (_) {
+    } else {
       yield LoginState.failure();
     }
   }

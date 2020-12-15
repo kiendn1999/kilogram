@@ -1,12 +1,12 @@
-import 'package:app_cnpm/pages/home_page.dart';
-import 'package:app_cnpm/pages/login_page.dart';
-import 'package:app_cnpm/pages/splash_page.dart';
-import 'package:app_cnpm/repositories/user_repository.dart';
-import 'package:app_cnpm/states/authentication_state.dart';
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kilogram_app/pages/home_page.dart';
+import 'package:kilogram_app/pages/login_page.dart';
+import 'package:kilogram_app/pages/splash_page.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
+import 'package:kilogram_app/states/authentication_state.dart';
 import 'blocs/authentication_bloc.dart';
 import 'blocs/login_bloc.dart';
 import 'blocs/simple_bloc_observer.dart';
@@ -15,7 +15,7 @@ import 'events/authentication_event.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = SimpleBlocObserver();
-  await Firebase.initializeApp();
+  //await Firebase.initializeApp();
   final UserRepository userRepository = UserRepository();
   runApp(
     BlocProvider(
@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
 
           if (state is AuthenticationSuccess) {
             return HomePage(
-              user: state.firebaseUser,
+              userRepository: _userRepository,
             );
           }
 

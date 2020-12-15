@@ -1,8 +1,8 @@
-import 'package:app_cnpm/events/register_event.dart';
-import 'package:app_cnpm/repositories/user_repository.dart';
-import 'package:app_cnpm/states/register_state.dart';
-import 'package:app_cnpm/validators/validators.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kilogram_app/events/register_event.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
+import 'package:kilogram_app/states/register_state.dart';
+import 'package:kilogram_app/validators/validators.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final UserRepository _userRepository;
@@ -19,7 +19,10 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       yield* _mapRegisterPasswordChangeToState(event.password);
     } else if (event is RegisterSubmitted) {
       yield* _mapRegisterSubmittedToState(
-          email: event.email, password: event.password);
+          lastName: event.lastName,
+          firstName: event.firstName,
+          email: event.email,
+          password: event.password);
     }
   }
 
@@ -27,18 +30,22 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     yield state.update(isEmailValid: Validators.isValidEmail(email));
   }
 
-  Stream<RegisterState> _mapRegisterPasswordChangeToState(String password) async* {
+  Stream<RegisterState> _mapRegisterPasswordChangeToState(
+      String password) async* {
     yield state.update(isPasswordValid: Validators.isValidPassword(password));
   }
 
   Stream<RegisterState> _mapRegisterSubmittedToState(
-      {String email, String password}) async* {
+      {String lastName,
+      String firstName,
+      String email,
+      String password}) async* {
     yield RegisterState.loading();
-    try {
-      await _userRepository.signUp(email, password);
+    if (await _userRepository.registerUser(
+            lastName, firstName, email, password) ==
+        "true") {
       yield RegisterState.success();
-    } catch (error) {
-      print(error);
+    } else {
       yield RegisterState.failure();
     }
   }

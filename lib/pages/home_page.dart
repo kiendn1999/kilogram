@@ -1,38 +1,53 @@
-import 'package:app_cnpm/blocs/authentication_bloc.dart';
-import 'package:app_cnpm/events/authentication_event.dart';
-import 'package:app_cnpm/models/posts_data.dart';
-import 'package:app_cnpm/pages/activity_page.dart';
-import 'package:app_cnpm/pages/createpost_page.dart';
-import 'package:app_cnpm/pages/custom_profile.dart';
-import 'package:app_cnpm/pages/feed_page.dart';
-import 'package:app_cnpm/pages/profile.dart';
-import 'package:app_cnpm/pages/search_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:kilogram_app/blocs/authentication_bloc.dart';
+import 'package:kilogram_app/events/authentication_event.dart';
+import 'package:kilogram_app/models/posts_data.dart';
+import 'package:kilogram_app/pages/profile.dart';
+import 'package:kilogram_app/pages/search_page.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
+
+import 'activity_page.dart';
+import 'createpost_page.dart';
+import 'feed_page.dart';
 
 int currentPage = 0;
 class HomePage extends StatefulWidget {
 
-  final User user;
+  // final User user;
+  //
+  // const HomePage({Key key, this.user}) : super(key: key);
+  final UserRepository _userRepository;
 
-  const HomePage({Key key, this.user}) : super(key: key);
+  const HomePage({Key key, UserRepository userRepository})
+      : _userRepository = userRepository,
+        super(key: key);
   @override
   State<StatefulWidget> createState() => _HomeStatePage();
+
 
 }
 
 class _HomeStatePage extends State<HomePage>{
 
-  var _pages = [
-    Feed(),
-    SearchPage(),
-    CreatePostPage(),
-    ActivityPage(),
-    Profile(ipost: posts[2],),
-  ];
+
+  var _pages;
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      Feed(),
+      SearchPage(),
+      CreatePostPage(userRepository: widget._userRepository),
+      ActivityPage(),
+      Profile(userRepository: widget._userRepository)
+    ];
+  }
+
+
+
   var _pageController = PageController();
 
 

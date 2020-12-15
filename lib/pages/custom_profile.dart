@@ -1,7 +1,7 @@
-import 'package:app_cnpm/models/post.dart';
-import 'package:app_cnpm/models/posts_data.dart';
-import 'package:app_cnpm/pages/post_page.dart';
+
 import 'package:flutter/material.dart';
+import 'package:kilogram_app/models/posts_data.dart';
+import 'package:kilogram_app/pages/post_page.dart';
 
 import 'followers_page.dart';
 import 'follows_page.dart';

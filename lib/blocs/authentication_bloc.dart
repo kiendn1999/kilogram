@@ -1,8 +1,7 @@
-import 'package:app_cnpm/events/authentication_event.dart';
-import 'package:app_cnpm/repositories/user_repository.dart';
-import 'package:app_cnpm/states/authentication_state.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kilogram_app/events/authentication_event.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
+import 'package:kilogram_app/states/authentication_state.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
@@ -27,20 +26,21 @@ class AuthenticationBloc
   //AuthenticationLoggedOut
   Stream<AuthenticationState> _mapAuthenticationLoggedOutInToState() async* {
     yield AuthenticationFailure();
-    _userRepository.signOut();
+    _userRepository.isLogined=false;
+    //_userRepository.signOut();
   }
 
   //AuthenticationLoggedIn
   Stream<AuthenticationState> _mapAuthenticationLoggedInToState() async* {
-    yield AuthenticationSuccess(await _userRepository.getUser());
+    yield AuthenticationSuccess(/*await _userRepository.getUser()*/);
   }
 
   // AuthenticationStarted
   Stream<AuthenticationState> _mapAuthenticationStartedToState() async* {
-    final isSignedIn = await _userRepository.isSignedIn();
+    final isSignedIn =  _userRepository.isLogined;
     if (isSignedIn) {
-      final  firebaseUser = await _userRepository.getUser();
-      yield AuthenticationSuccess(firebaseUser);
+      //final  firebaseUser = await _userRepository.getUser();
+      yield AuthenticationSuccess(/*firebaseUser*/);
     } else {
       yield AuthenticationFailure();
     }

@@ -1,10 +1,12 @@
-import 'package:app_cnpm/models/posts_data.dart';
-import 'package:app_cnpm/pages/comments_page.dart';
-import 'package:app_cnpm/pages/custom_profile.dart';
-import 'package:app_cnpm/pages/likes_page.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:kilogram_app/models/posts_data.dart';
+
+import 'comments_page.dart';
+import 'custom_profile.dart';
+import 'likes_page.dart';
 
 class Feed extends StatefulWidget {
   @override

@@ -1,35 +1,128 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'package:kilogram_app/models/post.dart';
+import 'package:kilogram_app/models/user.dart';
+
+import 'serveroperations.dart';
 
 class UserRepository {
-  final FirebaseAuth _firebaseAuth;
+  bool isLogined = false;
+  String _getUserID;
 
-  UserRepository()
-      : _firebaseAuth = FirebaseAuth.instance;
+  //CustomCacheManager customCacheManager = CustomCacheManager();
 
-  Future<void> signInWithCredentials(String email, String password) {
-    return _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
+  UserRepository() {}
+
+  Future<String> registerUser(
+      String lastName, String firstName, String email, String password) async {
+    final response = await ServerOperation().postDataToServer(
+        'http://192.168.31.145:3000/users/signup',
+        jsonEncode(<String, String>{
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': email,
+          'password': password
+        }));
+
+    if (response.statusCode == 201) {
+      _getUserID = jsonDecode(response.body)['_id'];
+      return "true";
+    } else
+      return jsonDecode(response.body)['error']['message'];
   }
 
-  Future<void> signUp(String email, String password) async {
-    return await _firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
+  Future<String> checkLoginCredentials(String email, String password) async {
+    String url = 'http://192.168.31.145:3000/users/signin';
+
+    final response = await ServerOperation().postDataToServer(
+      url,
+      jsonEncode(<String, String>{'email': email, 'password': password}),
     );
+
+    if (response.statusCode == 201 &&
+        jsonDecode(response.body)['_id'] != null) {
+      isLogined = true;
+      _getUserID = jsonDecode(response.body)['_id'];
+      return "true";
+    }
+    return jsonDecode(response.body)['error']['message'];
   }
 
-  Future<void> signOut() async {
-    return Future.wait([_firebaseAuth.signOut()]);
+  Future<User> getInfoUser() async {
+    String url = 'http://192.168.31.145:3000/users/$_getUserID';
+    print(_getUserID);
+    final response = await ServerOperation().getDataFromServer(url);
+
+    if (response.statusCode == 200) {
+
+      return User.fromJson(jsonDecode(response.body)['user']);
+    }else throw Exception('Failed to load User');
   }
 
-  Future<bool> isSignedIn() async {
-    final currentUser = await _firebaseAuth.currentUser;
-    return currentUser != null;
-  }
+// Future<bool> checkIfUserExists(User user) async {
+//   String firstName = user.firstName,
+//       lastName = user.lastName,
+//       nickName = user.nickName,
+//       email = user.email,
+//       password = user.password;
+//
+//   String url =
+//       "https://bismarck.sdsu.edu/api/instapost-upload/newuser?firstname=$firstName&lastname=$lastName&nickname=$nickName&email=$email&password=$password";
+//   final response = await ServerOperation().getDataFromServer(url);
+//
+//   if (response.statusCode == 200) {
+//     return true;
+//   }
+//
+//   return false;
+// }
 
-  Future<User> getUser() async {
-    return await _firebaseAuth.currentUser;
-  }
+// Future<bool> checkIfNickNameIsTaken(String nickName) async {
+//   String url =
+//       " https://bismarck.sdsu.edu/api/instapost-query/nickname-exists?nickname=$nickName";
+//   final response = await ServerOperation().getDataFromServer(url);
+//
+//   if (response.statusCode == 200 &&
+//       jsonDecode(response.body)["result"] == true) {
+//     return true;
+//   } else
+//     return false;
+// }
+//
+// Future<bool> checkIfEmailIsTaken(String email) async {
+//   String url =
+//       "https://bismarck.sdsu.edu/api/instapost-query/email-exists?email=$email";
+//   final response = await ServerOperation().getDataFromServer(url);
+//   if (response.statusCode == 200 &&
+//       jsonDecode(response.body)["result"] == true) {
+//     return true;
+//   } else
+//     return false;
+// }
+//
+// Future<List<String>> getAllNickNames() async {
+//   if (await ServerOperation().checkConnection()) {
+//     String url = "https://bismarck.sdsu.edu/api/instapost-query/nicknames";
+//     final response = await ServerOperation().getDataFromServer(url);
+//     if (response.statusCode == 200)
+//       customCacheManager.writeDataToCache(
+//           'nicknames.json', response.body.toString());
+//     return List.from(jsonDecode(response.body)["nicknames"]);
+//   } else {
+//     String response =
+//         await customCacheManager.readDataFromCache('nicknames.json');
+//     return List.from(jsonDecode(response)["nicknames"]);
+//   }
+// }
 
+// Future<int> getPendingPostsForSpecificUser(
+//     String user, String password) async {
+//   if (await ServerOperation().checkConnection()) {
+//     List<Map<String, dynamic>> pendingUploads =
+//     await DatabaseHelper.instance.queryForAnEmail(user);
+//     if (pendingUploads.length > 0)
+//       return await PostOperations()
+//           .uploadPendingPost(pendingUploads, password);
+//   }
+//   return 0;
+// }
 }
-
