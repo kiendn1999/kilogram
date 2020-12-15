@@ -44,6 +44,7 @@ class _Profile extends State<Profile> {
         future: futureUser,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            Uint8List imagebytes = base64Decode(snapshot.data.avatar);
             return Column(
               children: <Widget>[
                 //Info
@@ -85,8 +86,7 @@ class _Profile extends State<Profile> {
                                 image: snapshot.data.avatar.isEmpty
                                     ? AssetImage("assets/default_avatar.jpg")
                                     //AssetImage('assets/default_avatar.jpg')
-                                    : NetworkImage(
-                                        "https://images-na.ssl-images-amazon.com/images/I/91if9r4O4WL._SL1500_.jpg"),
+                                    : Image.memory(imagebytes).image,
                                 // image: NetworkImage(widget.ipost.userImage)
                               ),
                             ),
