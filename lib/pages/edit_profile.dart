@@ -130,10 +130,9 @@ class _EditProfile extends State<EditProfile> {
               },
               child: FutureBuilder<User>(
                   future: futureUser,
-                  // ignore: missing_return
                   builder: (context, snapshot){
-                    Uint8List imagebytes = base64Decode(snapshot.data.avatar);
-                    if (snapshot.hasData)
+                    if (snapshot.hasData) {
+                      Uint8List imagebytes = base64Decode(snapshot.data.avatar);
                       return
                         ListView(
                           children: [
@@ -254,7 +253,11 @@ class _EditProfile extends State<EditProfile> {
                               ],
                             ),
                           ],
-                        );
+                        );}
+                    else if (snapshot.hasError) return Text("${snapshot.error}");
+                    return Center(
+                          child: CircularProgressIndicator(),
+                    );
                   }
               ),
             ),
