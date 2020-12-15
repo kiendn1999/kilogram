@@ -43,14 +43,15 @@ class _Profile extends State<Profile> {
     super.initState();
     futureUser = widget._userRepository.getInfoUser();
     _controller.addListener(_onScroll);
-    _getUserid();
     _getPosts();
   }
-  void _getUserid() async{
-     user= await widget._userRepository.getInfoUser();
-  }
+
   Future<void> _getPosts() async {
     _loading = true;
+    if (user==null){
+      user= await widget._userRepository.getInfoUser();
+    }
+
     final newPosts = await PostRepository().getAllPostsinUser(user.userID, _pageKey);
 
     setState(() {
