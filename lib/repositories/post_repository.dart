@@ -5,8 +5,8 @@ import 'package:kilogram_app/models/user.dart';
 import 'serveroperations.dart';
 
 class PostRepository{
-  Future<List<Post1>> getAllPostsinUser(String userID) async {
-    String url = 'http://192.168.1.7:3000/users/$userID/posts?page=1';
+  Future<List<Post1>> getAllPostsinUser(String userID, int pageKey) async {
+    String url = 'http://192.168.31.204:3000/users/$userID/posts?page=$pageKey';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {

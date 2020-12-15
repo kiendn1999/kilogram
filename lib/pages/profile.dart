@@ -1,9 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:infinite_widgets/infinite_widgets.dart';
 import 'package:kilogram_app/models/post.dart';
-import 'package:kilogram_app/models/posts_data.dart';
 import 'package:kilogram_app/models/user.dart';
-import 'package:kilogram_app/pages/post_page.dart';
-
 import 'edit_profile.dart';
 import 'followers_page.dart';
 import 'follows_page.dart';
@@ -14,9 +13,6 @@ import 'dart:typed_data';
 import 'package:kilogram_app/repositories/post_repository.dart';
 
 class Profile extends StatefulWidget {
-  //final Post ipost;
-
-  //rofile({this.ipost});
   final UserRepository _userRepository;
 
   const Profile({Key key, UserRepository userRepository})
@@ -43,103 +39,134 @@ class _Profile extends State<Profile> {
       color: Colors.black87,
       width: MediaQuery.of(context).size.width,
       child: SingleChildScrollView(
-        child: FutureBuilder<User>(
-          future: futureUser,
-          builder: (context, snapshot) {
-            if (snapshot.hasData)
-              return Column(
-                children: <Widget>[
-                  //Info
-                  Container(
-                    height: 290,
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.purpleAccent, Colors.pinkAccent],
-                    )),
-                    child: Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      child: Center(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            //avatar
-                            Container(
-                              width: 100,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 4,
-                                    color: Theme.of(context)
-                                        .scaffoldBackgroundColor),
-                                boxShadow: [
-                                  BoxShadow(
-                                      spreadRadius: 2,
-                                      blurRadius: 10,
-                                      color: Colors.black.withOpacity(0.1),
-                                      offset: Offset(0, 10)),
-                                ],
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: snapshot.data.avatar.isEmpty
-                                      ? AssetImage("assets/default_avatar.jpg")
-                                      //AssetImage('assets/default_avatar.jpg')
-                                      : NetworkImage(
-                                          "https://images-na.ssl-images-amazon.com/images/I/91if9r4O4WL._SL1500_.jpg"),
-                                  // image: NetworkImage(widget.ipost.userImage)
-                                ),
+          child: FutureBuilder<User>(
+        future: futureUser,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Column(
+              children: <Widget>[
+                //Info
+                Container(
+                  height: 290,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.purpleAccent, Colors.pinkAccent],
+                  )),
+                  child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          //avatar
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                  width: 4,
+                                  color: Theme.of(context)
+                                      .scaffoldBackgroundColor),
+                              boxShadow: [
+                                BoxShadow(
+                                    spreadRadius: 2,
+                                    blurRadius: 10,
+                                    color: Colors.black.withOpacity(0.1),
+                                    offset: Offset(0, 10)),
+                              ],
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: snapshot.data.avatar.isEmpty
+                                    ? AssetImage("assets/default_avatar.jpg")
+                                    //AssetImage('assets/default_avatar.jpg')
+                                    : NetworkImage(
+                                        "https://images-na.ssl-images-amazon.com/images/I/91if9r4O4WL._SL1500_.jpg"),
+                                // image: NetworkImage(widget.ipost.userImage)
                               ),
                             ),
+                          ),
 
-                            //username
-                            Text(
-                              snapshot.data.firstName,
-                              style:
-                                  TextStyle(fontSize: 22, color: Colors.white),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
+                          //username
+                          Text(
+                            snapshot.data.firstName,
+                            style: TextStyle(fontSize: 22, color: Colors.white),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
 
-                            //edit buton
-                            RaisedButton(
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => EditProfile()));
-                              },
-                              color: Colors.red,
-                              shape: new RoundedRectangleBorder(
-                                  borderRadius: new BorderRadius.circular(10)),
-                              child: Text(
-                                'Edit Profile',
-                                style: TextStyle(color: Colors.white),
-                              ),
+                          //edit buton
+                          RaisedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => EditProfile()));
+                            },
+                            color: Colors.red,
+                            shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(10)),
+                            child: Text(
+                              'Edit Profile',
+                              style: TextStyle(color: Colors.white),
                             ),
-                            Card(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 3),
-                              clipBehavior: Clip.antiAlias,
-                              color: Colors.black87,
-                              shape: new RoundedRectangleBorder(
-                                  borderRadius: new BorderRadius.circular(10)),
-                              elevation: 8,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 22, vertical: 8),
-                                child: Row(
-                                  children: <Widget>[
-                                    Expanded(
+                          ),
+                          Card(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 3),
+                            clipBehavior: Clip.antiAlias,
+                            color: Colors.black87,
+                            shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(10)),
+                            elevation: 8,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 22, vertical: 8),
+                              child: Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Column(
+                                      children: <Widget>[
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          "Posts",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          "5",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    FollowersPage()));
+                                      },
                                       child: Column(
                                         children: <Widget>[
                                           SizedBox(
                                             height: 10,
                                           ),
                                           Text(
-                                            "Posts",
+                                            "Followers",
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 22,
@@ -157,13 +184,14 @@ class _Profile extends State<Profile> {
                                         ],
                                       ),
                                     ),
-                                    Expanded(
-                                      child: InkWell(
+                                  ),
+                                  Expanded(
+                                    child: InkWell(
                                         onTap: () {
                                           Navigator.of(context).push(
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      FollowersPage()));
+                                                      FollowsPage()));
                                         },
                                         child: Column(
                                           children: <Widget>[
@@ -171,7 +199,7 @@ class _Profile extends State<Profile> {
                                               height: 10,
                                             ),
                                             Text(
-                                              "Followers",
+                                              "Follow",
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 22,
@@ -187,56 +215,24 @@ class _Profile extends State<Profile> {
                                               ),
                                             ),
                                           ],
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: InkWell(
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        FollowsPage()));
-                                          },
-                                          child: Column(
-                                            children: <Widget>[
-                                              SizedBox(
-                                                height: 10,
-                                              ),
-                                              Text(
-                                                "Follow",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 22,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              Text(
-                                                "5",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                              ),
-                                            ],
-                                          )),
-                                    ),
-                                  ],
-                                ),
+                                        )),
+                                  ),
+                                ],
                               ),
-                            )
-                          ],
-                        ),
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   ),
-                  //Posts
-                  Container(
-                      child: FutureBuilder<List<Post1>>(
-                          future: PostRepository()
-                              .getAllPostsinUser(snapshot.data.userID),
-                          builder: (context, snapshot1) {
+                ),
+                //Posts
+                Container(
+                    child: FutureBuilder<List<Post1>>(
+                        future: PostRepository()
+                            .getAllPostsinUser(snapshot.data.userID, 1),
+                        builder: (context, snapshot1) {
+                          if (snapshot1.hasData)
                             return GridView.builder(
                                 shrinkWrap: true,
                                 gridDelegate:
@@ -268,16 +264,18 @@ class _Profile extends State<Profile> {
                                         )),
                                   );
                                 });
-                          })),
-                ],
-              );
-            else if (snapshot.hasError) return Text("${snapshot.error}");
-            return Center(
-              child: CircularProgressIndicator(),
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        })),
+              ],
             );
-          },
-        ),
-      ),
+          } else if (snapshot.hasError) return Text("${snapshot.error}");
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      )),
     );
   }
 }
