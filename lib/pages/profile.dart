@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_widgets/infinite_widgets.dart';
 import 'package:kilogram_app/models/post.dart';
 import 'package:kilogram_app/models/user.dart';
+import 'package:loadmore/loadmore.dart';
 import 'edit_profile.dart';
 import 'followers_page.dart';
 import 'follows_page.dart';
@@ -25,12 +25,58 @@ class Profile extends StatefulWidget {
 
 class _Profile extends State<Profile> {
   Future<User> futureUser;
+  static const double _endReachedThreshold = 200;
+  static const int _itemsPerPage = 12;
+
+  final ScrollController _controller = ScrollController();
+
+  List<Post1> _posts = [];
+  int _pageKey = 1;
+  bool _loading = true;
+  bool _canLoadMore = true;
+  User user;
+
+
 
   @override
-  void initState() {
+  Future<void> initState() {
     super.initState();
     futureUser = widget._userRepository.getInfoUser();
+    _controller.addListener(_onScroll);
+    _getUserid();
+    _getPosts();
   }
+  void _getUserid() async{
+     user= await widget._userRepository.getInfoUser();
+  }
+  Future<void> _getPosts() async {
+    _loading = true;
+    final newPosts = await PostRepository().getAllPostsinUser(user.userID, _pageKey);
+
+    setState(() {
+      _posts.addAll(newPosts);
+
+      _pageKey++;
+
+      if (newPosts.length < _itemsPerPage ) {
+        _canLoadMore = false;
+        return false;
+      }
+
+      _loading = false;
+    });
+  }
+
+  void _onScroll() {
+    if (!_controller.hasClients || _loading ) return;
+
+    final thresholdReached = _controller.position.extentAfter < _endReachedThreshold;
+
+    if (thresholdReached) {
+      _getPosts();
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +85,7 @@ class _Profile extends State<Profile> {
       color: Colors.black87,
       width: MediaQuery.of(context).size.width,
       child: SingleChildScrollView(
+          controller: _controller,
           child: FutureBuilder<User>(
         future: futureUser,
         builder: (context, snapshot) {
@@ -93,7 +140,9 @@ class _Profile extends State<Profile> {
 
                           //username
                           Text(
-                            snapshot.data.firstName + ' ' + snapshot.data.lastName,
+                            snapshot.data.firstName +
+                                ' ' +
+                                snapshot.data.lastName,
                             style: TextStyle(fontSize: 22, color: Colors.white),
                           ),
                           SizedBox(
@@ -104,7 +153,8 @@ class _Profile extends State<Profile> {
                           RaisedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => EditProfile(userRepository: widget._userRepository)));
+                                  builder: (context) => EditProfile(
+                                      userRepository: widget._userRepository)));
                             },
                             color: Colors.red,
                             shape: new RoundedRectangleBorder(
@@ -228,46 +278,47 @@ class _Profile extends State<Profile> {
                 ),
                 //Posts
                 Container(
-                    child: FutureBuilder<List<Post1>>(
-                        future: PostRepository()
-                            .getAllPostsinUser(snapshot.data.userID, 1),
-                        builder: (context, snapshot1) {
-                          if (snapshot1.hasData)
-                            return GridView.builder(
-                                shrinkWrap: true,
-                                gridDelegate:
-                                    SliverGridDelegateWithMaxCrossAxisExtent(
-                                  //crossAxisCount: 3,
-                                  maxCrossAxisExtent: 150,
-                                  crossAxisSpacing: 0.2,
-                                  mainAxisSpacing: 0.1,
-                                ),
-                                physics: ScrollPhysics(),
-                                scrollDirection: Axis.vertical,
-                                itemCount: snapshot1.data.length,
-                                itemBuilder: (context, i) {
-                                  Uint8List imagebytes =
-                                      base64Decode(snapshot1.data[i].postImage);
-                                  return InkWell(
-                                    onTap: () {
-                                      /* Navigator.of(context).push(
+                    child: GridView.builder(
+                        shrinkWrap: true,
+                        gridDelegate:
+                        SliverGridDelegateWithMaxCrossAxisExtent(
+                          //crossAxisCount: 3,
+                          maxCrossAxisExtent: 150,
+                          crossAxisSpacing: 0.2,
+                          mainAxisSpacing: 0.1,
+                        ),
+                        physics: ScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        itemCount: _posts.length,
+                        itemBuilder: (context, i) {
+                          Uint8List imagebytes = base64Decode(
+                              _posts[i].postImage);
+                          return InkWell(
+                            onTap: () {
+                              /* Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     PostPage(
                                                       post: snapshot1.data[i],
                                                     )));*/
-                                    },
-                                    child: Container(
-                                        color: Colors.black87,
-                                        child: Image(
-                                          image: Image.memory(imagebytes).image,
-                                        )),
-                                  );
-                                });
-                          return Center(
-                            child: CircularProgressIndicator(),
+                            },
+                            child: Container(
+                                color: Colors.black87,
+                                child: Image(
+                                  image: Image.memory(imagebytes)
+                                      .image,
+                                )),
                           );
                         })),
+                Container(
+                  child: _canLoadMore
+                      ? Container(
+                    padding: EdgeInsets.only(bottom: 16),
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  )
+                      : SizedBox(),
+                ),
               ],
             );
           } else if (snapshot.hasError) return Text("${snapshot.error}");

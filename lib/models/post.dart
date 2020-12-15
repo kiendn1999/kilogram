@@ -9,6 +9,7 @@ class Post1 {
   int cmtCount;
   String caption;
 
+
   //String date;
 
   // String userImage;
@@ -23,6 +24,7 @@ class Post1 {
     this.caption,
     this.likeCount,
     this.cmtCount,
+
     //this.date,
 
     // this.userImage,

@@ -12,6 +12,7 @@ class User {
   int followerCount;
   int followeeCount;
   String avatar;
+  int totalPosts;
 
   List<Post1> posts = new List();
   List<Comment> comments = new List();
@@ -26,7 +27,8 @@ class User {
     this.firstName,
     //this.userImage,
     this.email,
-    this.avatar
+    this.avatar,
+    this.totalPosts
     //this.password,
     // this.followerCount,
     // this.followeeCount
@@ -38,6 +40,7 @@ class User {
       lastName: json['lastName'],
       firstName: json['firstName'],
       email: json['email'],
+      totalPosts: json['totalPosts'],
       avatar: json['avatar'],
     );
   }
