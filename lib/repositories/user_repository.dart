@@ -15,7 +15,7 @@ class UserRepository {
   Future<String> registerUser(
       String lastName, String firstName, String email, String password) async {
     final response = await ServerOperation().postDataToServer(
-        'http://192.168.31.145:3000/users/signup',
+        'http://192.168.1.7:3000/users/signup',
         jsonEncode(<String, String>{
           'firstName': firstName,
           'lastName': lastName,
@@ -31,7 +31,7 @@ class UserRepository {
   }
 
   Future<String> checkLoginCredentials(String email, String password) async {
-    String url = 'http://192.168.31.145:3000/users/signin';
+    String url = 'http://192.168.1.7:3000/users/signin';
 
     final response = await ServerOperation().postDataToServer(
       url,
@@ -48,7 +48,7 @@ class UserRepository {
   }
 
   Future<User> getInfoUser() async {
-    String url = 'http://192.168.31.145:3000/users/$_getUserID';
+    String url = 'http://192.168.1.7:3000/users/$_getUserID';
     print(_getUserID);
     final response = await ServerOperation().getDataFromServer(url);
 

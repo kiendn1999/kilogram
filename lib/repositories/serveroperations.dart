@@ -21,7 +21,7 @@ class ServerOperation {
 
   Future<bool> checkConnection() async {
     try {
-      String url = "http://192.168.31.145:3000";
+      String url = "http://192.168.1.7:3000";
       final response = await ServerOperation().getDataFromServer(url);
       if (response.statusCode == 200 &&
           jsonDecode(response.body)['message'] == 'Server is OK!') {

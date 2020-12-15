@@ -9,7 +9,7 @@ class PostRepository{
   String _getPostID;
 
   Future<List<Post1>> getAllPostsinUser(String userID, int pageKey) async {
-    String url = 'http://192.168.31.145:3000/users/$userID/posts?page=$pageKey';
+    String url = 'http://192.168.1.7:3000/users/$userID/posts?page=$pageKey';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
@@ -24,7 +24,7 @@ class PostRepository{
   Future<String> createAPostInUser(
       String image, String caption, String userID) async {
     final response = await ServerOperation().postDataToServer(
-        'http://192.168.31.145:3000/users/$userID/posts',
+        'http://192.168.1.7:3000/users/$userID/posts',
         jsonEncode(<String, String>{
           'image': image,
           'description': caption,
@@ -38,7 +38,7 @@ class PostRepository{
   }
 
   Future<Post1> getAPost(String postID) async {
-    String url = 'http://192.168.31.145:3000/posts/$postID';
+    String url = 'http://192.168.1.7:3000/posts/$postID';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
