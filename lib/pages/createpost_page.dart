@@ -1,19 +1,45 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kilogram_app/models/user.dart';
+import 'package:kilogram_app/pages/feed_page.dart';
+import 'package:kilogram_app/pages/profile.dart';
+import 'package:kilogram_app/repositories/post_repository.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
 
 class CreatePostPage extends StatefulWidget {
+  final UserRepository _userRepository;
+
+  const CreatePostPage({Key key, UserRepository userRepository})
+      : _userRepository = userRepository,
+        super(key: key);
   @override
   _CreatePostPage createState() => _CreatePostPage();
 }
 
 class _CreatePostPage extends State<CreatePostPage> {
+  Future<User> futureUser;
+
   File _image;
   TextEditingController _captionController = TextEditingController();
   String _caption = '';
   bool _isLoading = false;
+  String imageBase64Encode;
+  User user;
+
+  @override
+  Future<void> initState() {
+    super.initState();
+    futureUser = widget._userRepository.getInfoUser();
+    getuserID();
+  }
+
+void getuserID() async{
+    user = await widget._userRepository.getInfoUser();
+  }
 
   _showSelectImageDialog() {
     return Platform.isIOS ? _iosBottomSheet() : _androidDialog();
@@ -95,32 +121,11 @@ class _CreatePostPage extends State<CreatePostPage> {
     return croppedImage;
   }
 
-  _submit() async {
-    // if (!_isLoading && _image != null && _caption.isNotEmpty) {
-    //   setState(() {
-    //     _isLoading = true;
-    //   });
-    //
-    //   // Create post
-    //   String imageUrl = await StorageService.uploadPost(_image);
-    //   Post post = Post(
-    //     imageUrl: imageUrl,
-    //     caption: _caption,
-    //     likeCount: 0,
-    //     authorId: Provider.of<UserData>(context).currentUserId,
-    //     timestamp: Timestamp.fromDate(DateTime.now()),
-    //   );
-    //   DatabaseService.createPost(post);
-    //
-    //   // Reset data
-    //   _captionController.clear();
-    //
-    //   setState(() {
-    //     _caption = '';
-    //     _image = null;
-    //     _isLoading = false;
-    //   });
-    // }
+  _submit() {
+
+    final bytes = _image.readAsBytesSync();
+    imageBase64Encode = base64Encode(bytes);
+    PostRepository().createAPostInUser(imageBase64Encode, _caption, user.userID);
   }
 
   @override
@@ -139,7 +144,11 @@ class _CreatePostPage extends State<CreatePostPage> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: _submit,
+            onPressed: () {
+              _submit();
+              return Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => CreatePostPage(userRepository: widget._userRepository)));
+            },
           ),
         ],
       ),

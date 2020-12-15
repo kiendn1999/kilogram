@@ -40,11 +40,12 @@ class _HomeStatePage extends State<HomePage>{
     _pages = [
       Feed(),
       SearchPage(),
-      CreatePostPage(),
+      CreatePostPage(userRepository: widget._userRepository),
       ActivityPage(),
       Profile(userRepository: widget._userRepository)
     ];
   }
+
 
 
   var _pageController = PageController();

@@ -39,13 +39,13 @@ class Post1 {
         caption: json['description']);
   }
 
-  Map<String, dynamic> toJson() => {
-        'postID': postID,
-        'authorID': authorID,
-        'postImage': postImage,
-        'likeCount': likeCount,
-        'cmtCount': cmtCount,
-        'caption': caption,
-        //'date': date
-      };
+  // Map<String, dynamic> toJson() => {
+  //       'postID': postID,
+  //       'authorID': authorID,
+  //       'postImage': postImage,
+  //       'likeCount': likeCount,
+  //       'cmtCount': cmtCount,
+  //       'caption': caption,
+  //       //'date': date
+  //     };
 }

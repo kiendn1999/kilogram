@@ -129,133 +129,133 @@ class _EditProfile extends State<EditProfile> {
                 FocusScope.of(context).unfocus();
               },
               child: FutureBuilder<User>(
-                future: futureUser,
-                // ignore: missing_return
-                builder: (context, snapshot){
-                  Uint8List imagebytes = base64Decode(snapshot.data.avatar);
-                  if (snapshot.hasData)
-                    return
-                      ListView(
-                        children: [
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Center(
-                            child: Stack(
-                              children: [
-                                //avatar
-                                Container(
-                                  width: 130,
-                                  height: 130,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 4,
-                                        color:
-                                        Theme.of(context).scaffoldBackgroundColor),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          spreadRadius: 2,
-                                          blurRadius: 10,
-                                          color: Colors.black.withOpacity(0.1),
-                                          offset: Offset(0, 10)),
-                                    ],
-                                    shape: BoxShape.circle,
-                                    image: DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: snapshot.data.avatar.isEmpty
-                                            ? AssetImage("assets/default_avatar.jpg")
-                                            : Image.memory(imagebytes).image),
+                  future: futureUser,
+                  // ignore: missing_return
+                  builder: (context, snapshot){
+                    Uint8List imagebytes = base64Decode(snapshot.data.avatar);
+                    if (snapshot.hasData)
+                      return
+                        ListView(
+                          children: [
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Center(
+                              child: Stack(
+                                children: [
+                                  //avatar
+                                  Container(
+                                    width: 130,
+                                    height: 130,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 4,
+                                          color:
+                                          Theme.of(context).scaffoldBackgroundColor),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            spreadRadius: 2,
+                                            blurRadius: 10,
+                                            color: Colors.black.withOpacity(0.1),
+                                            offset: Offset(0, 10)),
+                                      ],
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: snapshot.data.avatar.isEmpty
+                                              ? AssetImage("assets/default_avatar.jpg")
+                                              : Image.memory(imagebytes).image),
+                                    ),
                                   ),
+                                  //edit avatar
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: InkWell(
+                                        onTap: _showSelectImageDialog,
+                                        child: Container(
+                                          height: 40,
+                                          width: 40,
+                                          decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  width: 4,
+                                                  color: Theme.of(context)
+                                                      .scaffoldBackgroundColor),
+                                              color: Colors.green),
+                                          child: Icon(
+                                            Icons.camera_enhance,
+                                            color: Colors.white,
+                                          ),
+                                        )),
+                                  )
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 35,
+                            ),
+                            buildTextField("First Name", snapshot.data.firstName, false),
+                            buildTextField("Last Name", snapshot.data.lastName, false),
+                            buildTextField("Password", "*************", true),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                RaisedButton(
+                                  padding: EdgeInsets.symmetric(horizontal: 50),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  color: Colors.redAccent,
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("Cancel",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          letterSpacing: 2,
+                                          color: Colors.white)),
                                 ),
-                                //edit avatar
-                                Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: InkWell(
-                                      onTap: _showSelectImageDialog,
-                                      child: Container(
-                                        height: 40,
-                                        width: 40,
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                                width: 4,
-                                                color: Theme.of(context)
-                                                    .scaffoldBackgroundColor),
-                                            color: Colors.green),
-                                        child: Icon(
-                                          Icons.camera_enhance,
-                                          color: Colors.white,
-                                        ),
-                                      )),
-                                )
+                                RaisedButton(
+                                  padding: EdgeInsets.symmetric(horizontal: 50),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20)),
+                                  color: Colors.lightGreen,
+                                  onPressed: () {
+                                    showAnimatedDialog(
+                                      context: context,
+                                      barrierDismissible: true,
+                                      builder: (BuildContext context) {
+                                        return ClassicGeneralDialogWidget(
+                                          titleText: 'Saving change ?',
+                                          contentText:
+                                          "Would you like to cotinue saving this change info ?",
+                                          onPositiveClick: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          onNegativeClick: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        );
+                                      },
+                                      animationType: DialogTransitionType.scaleRotate,
+                                      curve: Curves.fastOutSlowIn,
+                                      duration: Duration(seconds: 1),
+                                    );
+                                  },
+                                  child: Text("Save",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          letterSpacing: 2,
+                                          color: Colors.white)),
+                                ),
                               ],
                             ),
-                          ),
-                          SizedBox(
-                            height: 35,
-                          ),
-                          buildTextField("First Name", snapshot.data.firstName, false),
-                          buildTextField("Last Name", snapshot.data.lastName, false),
-                          buildTextField("Password", "*************", true),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              RaisedButton(
-                                padding: EdgeInsets.symmetric(horizontal: 50),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                color: Colors.redAccent,
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text("Cancel",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        letterSpacing: 2,
-                                        color: Colors.white)),
-                              ),
-                              RaisedButton(
-                                padding: EdgeInsets.symmetric(horizontal: 50),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                color: Colors.lightGreen,
-                                onPressed: () {
-                                  showAnimatedDialog(
-                                    context: context,
-                                    barrierDismissible: true,
-                                    builder: (BuildContext context) {
-                                      return ClassicGeneralDialogWidget(
-                                        titleText: 'Saving change ?',
-                                        contentText:
-                                        "Would you like to cotinue saving this change info ?",
-                                        onPositiveClick: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        onNegativeClick: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      );
-                                    },
-                                    animationType: DialogTransitionType.scaleRotate,
-                                    curve: Curves.fastOutSlowIn,
-                                    duration: Duration(seconds: 1),
-                                  );
-                                },
-                                child: Text("Save",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        letterSpacing: 2,
-                                        color: Colors.white)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                }
+                          ],
+                        );
+                  }
               ),
             ),
           ),
@@ -273,16 +273,16 @@ class _EditProfile extends State<EditProfile> {
         decoration: InputDecoration(
             suffixIcon: isPassword
                 ? IconButton(
-                    icon: Icon(
-                      Icons.remove_red_eye,
-                      color: this.showPassword ? Colors.redAccent : Colors.grey,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        showPassword = !showPassword;
-                      });
-                    },
-                  )
+              icon: Icon(
+                Icons.remove_red_eye,
+                color: this.showPassword ? Colors.redAccent : Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  showPassword = !showPassword;
+                });
+              },
+            )
                 : null,
             contentPadding: EdgeInsets.only(bottom: 3),
             labelText: labelText,

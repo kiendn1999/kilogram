@@ -11,6 +11,7 @@ class User {
   //String password;
   int followerCount;
   int followeeCount;
+  int totalPosts;
   String avatar;
 
   List<Post1> posts = new List();
@@ -26,10 +27,11 @@ class User {
     this.firstName,
     //this.userImage,
     this.email,
-    this.avatar
+    this.avatar,
+    this.totalPosts,
     //this.password,
     // this.followerCount,
-    // this.followeeCount
+    // this.followeeCount,
 });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -39,20 +41,21 @@ class User {
       firstName: json['firstName'],
       email: json['email'],
       avatar: json['avatar'],
+      totalPosts: json['totalPosts'],
     );
   }
 
 
 
-  Map<String, dynamic> toJson() => {
-    'userID': userID,
-    'lastName': lastName,
-    'firstName': firstName,
-    //'userImage': userImage,
-    'email': email,
-    'avatar': avatar,
-    //'password': password,
-    // 'followerCount': followerCount,
-    // 'followeeCount': followeeCount,
-  };
+  // Map<String, dynamic> toJson() => {
+  //   'userID': userID,
+  //   'lastName': lastName,
+  //   'firstName': firstName,
+  //   //'userImage': userImage,
+  //   'email': email,
+  //   'avatar': avatar,
+  //   //'password': password,
+  //   // 'followerCount': followerCount,
+  //   // 'followeeCount': followeeCount,
+  // };
 }
