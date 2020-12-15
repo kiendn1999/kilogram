@@ -21,24 +21,22 @@ class CreatePostPage extends StatefulWidget {
 }
 
 class _CreatePostPage extends State<CreatePostPage> {
-  Future<User> futureUser;
 
   File _image;
   TextEditingController _captionController = TextEditingController();
   String _caption = '';
   bool _isLoading = false;
-  String imageBase64Encode;
-  User user;
+  String _imageBase64Encode;
+  User _user;
 
   @override
   Future<void> initState() {
     super.initState();
-    futureUser = widget._userRepository.getInfoUser();
     getuserID();
   }
 
 void getuserID() async{
-    user = await widget._userRepository.getInfoUser();
+    _user = await widget._userRepository.getInfoUser();
   }
 
   _showSelectImageDialog() {
@@ -124,8 +122,8 @@ void getuserID() async{
   _submit() {
 
     final bytes = _image.readAsBytesSync();
-    imageBase64Encode = base64Encode(bytes);
-    PostRepository().createAPostInUser(imageBase64Encode, _caption, user.userID);
+    _imageBase64Encode = base64Encode(bytes);
+    PostRepository().createAPostInUser(_imageBase64Encode, _caption, _user.userID);
   }
 
   @override
