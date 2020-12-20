@@ -15,7 +15,11 @@ class UserRepository {
   Future<String> registerUser(
       String lastName, String firstName, String email, String password) async {
     final response = await ServerOperation().postDataToServer(
+<<<<<<< Updated upstream
         'http://192.168.31.145:3000/users/signup',
+=======
+        'http://192.168.1.97:8000/users/signup',
+>>>>>>> Stashed changes
         jsonEncode(<String, String>{
           'firstName': firstName,
           'lastName': lastName,
@@ -31,7 +35,11 @@ class UserRepository {
   }
 
   Future<String> checkLoginCredentials(String email, String password) async {
+<<<<<<< Updated upstream
     String url = 'http://192.168.31.145:3000/users/signin';
+=======
+    String url = 'http://192.168.1.97:8000/users/signin';
+>>>>>>> Stashed changes
 
     final response = await ServerOperation().postDataToServer(
       url,
@@ -48,7 +56,11 @@ class UserRepository {
   }
 
   Future<User> getInfoUser() async {
+<<<<<<< Updated upstream
     String url = 'http://192.168.31.145:3000/users/$_getUserID';
+=======
+    String url = 'http://192.168.1.97:8000/users/$_getUserID';
+>>>>>>> Stashed changes
     print(_getUserID);
     final response = await ServerOperation().getDataFromServer(url);
 
@@ -56,6 +68,22 @@ class UserRepository {
 
       return User.fromJson(jsonDecode(response.body)['user']);
     }else throw Exception('Failed to load User');
+  }
+
+  Future<String> updateUser( String firstName, String lastName, String email, String avatar, String userID) async {
+    final response = await ServerOperation().patchDataToServer(
+        'http://192.168.1.97:8000/users/$userID',
+        jsonEncode(<String, String>{
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': email,
+          'avatar': avatar,
+        }));
+    if (response.statusCode == 200) {
+
+      return 'success';
+    }else throw Exception('Failed to update User');
+
   }
 
 // Future<bool> checkIfUserExists(User user) async {
