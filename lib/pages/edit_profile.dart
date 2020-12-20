@@ -22,16 +22,29 @@ class EditProfile extends StatefulWidget {
 class _EditProfile extends State<EditProfile> {
 
   Future<User> futureUser;
+  User user;
 
   @override
   void initState() {
     super.initState();
     futureUser = widget._userRepository.getInfoUser();
+    getuserID();
+  }
+
+  void getuserID() async{
+    user = await widget._userRepository.getInfoUser();
   }
 
   bool showPassword = false;
   File _image;
+  String _imageBase64Encode;
   bool _isLoading = false;
+  String _firstname = '';
+  String _lastname = '';
+  String _email = '';
+  TextEditingController _firstnameController = TextEditingController();
+  TextEditingController _lastnameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
 
   _showSelectImageDialog() {
     return Platform.isIOS ? _iosBottomSheet() : _androidDialog();
@@ -113,6 +126,14 @@ class _EditProfile extends State<EditProfile> {
     return croppedImage;
   }
 
+  submit() {
+    final bytes = _image.readAsBytesSync();
+    _imageBase64Encode = base64Encode(bytes);
+    print(_firstname);print(_lastname);print(_email);
+    //UserRepository().updateUser(_firstname, _firstname, user.userID);
+    UserRepository().updateUser(_firstname, _lastname, _email, _imageBase64Encode, user.userID);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,7 +180,8 @@ class _EditProfile extends State<EditProfile> {
                                             offset: Offset(0, 10)),
                                       ],
                                       shape: BoxShape.circle,
-                                      image: DecorationImage(
+                                      image:
+                                      DecorationImage(
                                           fit: BoxFit.cover,
                                           image: snapshot.data.avatar.isEmpty
                                               ? AssetImage("assets/default_avatar.jpg")
@@ -195,8 +217,9 @@ class _EditProfile extends State<EditProfile> {
                               height: 35,
                             ),
                             buildTextField("First Name", snapshot.data.firstName, false),
-                            buildTextField("Last Name", snapshot.data.lastName, false),
-                            buildTextField("Password", "*************", true),
+                            buildTextField1("Last Name", snapshot.data.lastName, false),
+                            buildTextField2("Email", snapshot.data.email, false),
+                            //buildTextField("Password", "*************", true),// fix sau
                             SizedBox(
                               height: 30,
                             ),
@@ -232,7 +255,11 @@ class _EditProfile extends State<EditProfile> {
                                           contentText:
                                           "Would you like to cotinue saving this change info ?",
                                           onPositiveClick: () {
-                                            Navigator.of(context).pop();
+                                            if (_lastname=='') _lastname = snapshot.data.lastName;
+                                            if (_firstname=='') _firstname = snapshot.data.firstName;
+                                            if (_email=='') _email = snapshot.data.email;
+                                            submit();
+                                            //Navigator.of(context).pop();
                                           },
                                           onNegativeClick: () {
                                             Navigator.of(context).pop();
@@ -270,9 +297,11 @@ class _EditProfile extends State<EditProfile> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 30),
       child: TextField(
+        controller: _firstnameController,
         style: TextStyle(color: Colors.white),
         cursorColor: Colors.white,
         obscureText: isPassword?!this.showPassword:false,
+        onChanged: (input) => _firstname = input,
         decoration: InputDecoration(
             suffixIcon: isPassword
                 ? IconButton(
@@ -300,4 +329,82 @@ class _EditProfile extends State<EditProfile> {
       ),
     );
   }
+
+  Widget buildTextField1(
+      String labelText, String palaceholder, bool isPassword) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 30),
+      child: TextField(
+        controller: _lastnameController,
+        style: TextStyle(color: Colors.white),
+        cursorColor: Colors.white,
+        obscureText: isPassword?!this.showPassword:false,
+        onChanged: (input) => _lastname = input,
+        decoration: InputDecoration(
+            suffixIcon: isPassword
+                ? IconButton(
+              icon: Icon(
+                Icons.remove_red_eye,
+                color: this.showPassword ? Colors.redAccent : Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  showPassword = !showPassword;
+                });
+              },
+            )
+                : null,
+            contentPadding: EdgeInsets.only(bottom: 3),
+            labelText: labelText,
+            labelStyle: TextStyle(color: Colors.white),
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            hintText: palaceholder,
+            hintStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            )),
+      ),
+    );
+  }
+
+
+  Widget buildTextField2(
+      String labelText, String palaceholder, bool isPassword) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 30),
+      child: TextField(
+        controller: _emailController,
+        style: TextStyle(color: Colors.white),
+        cursorColor: Colors.white,
+        obscureText: isPassword?!this.showPassword:false,
+        onChanged: (input) => _email = input,
+        decoration: InputDecoration(
+            suffixIcon: isPassword
+                ? IconButton(
+              icon: Icon(
+                Icons.remove_red_eye,
+                color: this.showPassword ? Colors.redAccent : Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  showPassword = !showPassword;
+                });
+              },
+            )
+                : null,
+            contentPadding: EdgeInsets.only(bottom: 3),
+            labelText: labelText,
+            labelStyle: TextStyle(color: Colors.white),
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            hintText: palaceholder,
+            hintStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            )),
+      ),
+    );
+  }
+
 }
