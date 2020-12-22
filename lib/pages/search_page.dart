@@ -76,7 +76,7 @@ class _SearchPageState extends State<SearchPage> {
             onChanged: (input) {
               if (input.isNotEmpty) {
                 setState(() {
-                  _users = UserRepository().searchUser(input, 1);
+                  _users = UserRepository().searchUser(input);
                 });
               }
             },
@@ -96,7 +96,7 @@ class _SearchPageState extends State<SearchPage> {
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return Center(
-                          child: CircularProgressIndicator(),
+                          child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.green)),
                         );
                       }
                       if (snapshot.data.length == 0)

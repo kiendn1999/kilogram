@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'serveroperations.dart';
-import 'user_repository.dart';
 
 class FollowRepository {
   Future<List<String>> getFollowers(String userID) async {

@@ -36,7 +36,7 @@ class _CommentPage extends State<CommentPage> {
 
   final TextEditingController _commentController = TextEditingController();
   bool _isCommenting = false;
-  bool _isUpdate=false;
+  bool _isPostingCmt=false;
 
   @override
   void initState() {
@@ -100,7 +100,6 @@ class _CommentPage extends State<CommentPage> {
                 FocusScope.of(context).unfocus();
                 Navigator.of(context).pop();
                 setState(() {
-                  //_totalPost--;
                   _comments.remove(comment);
                 });
               },
@@ -189,16 +188,18 @@ class _CommentPage extends State<CommentPage> {
             ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 4.0),
-              child: IconButton(
+              child: _isPostingCmt?Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green))):IconButton(
                 icon: Icon(Icons.send),
                 onPressed: () async {
+                  setState(() {
+                    _isPostingCmt=true;
+                  });
                   FocusScope.of(context).unfocus();
                   if (_isCommenting) {
                     CommentResult cmtRS= await CmtRepository().creteComment(widget._idPost,
                         _commentController.text, UserRepository.getUserID);
                     _commentController.clear();
                     setState(() {
-                     _isUpdate=true;
                       _comments.add(Comment(
                           userID: _owner.userID,
                           lastName: _owner.lastName,
@@ -208,10 +209,11 @@ class _CommentPage extends State<CommentPage> {
                           dateCmt: DateTime.now().toString(),
                           commentID: cmtRS.commentID));
                       _isCommenting = false;
+                      _isPostingCmt=false;
                     });
                   }
                 },
-              ),
+              )
             ),
           ],
         ),
@@ -233,7 +235,7 @@ class _CommentPage extends State<CommentPage> {
                     style: TextStyle(color: Colors.white),
                   );
                 else
-                  return Center(child: CircularProgressIndicator());
+                  return Center(child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.pinkAccent)));
               }),
         ),
         body: Container(

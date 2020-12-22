@@ -153,7 +153,6 @@ class _Profile extends State<Profile> {
                                 height: 10,
                               ),
 
-                              //edit buton
                               RaisedButton(
                                 onPressed: ()  {
                                     Navigator.push(context,MaterialPageRoute(
@@ -163,7 +162,7 @@ class _Profile extends State<Profile> {
                                            });
                                     });
                                 },
-                                color: Colors.red,
+                                color: Colors.blue,
                                 shape: new RoundedRectangleBorder(
                                     borderRadius: new BorderRadius.circular(10)),
                                 child: Text(
@@ -261,7 +260,7 @@ class _Profile extends State<Profile> {
                                                     else
                                                       Center(
                                                           child:
-                                                          CircularProgressIndicator())
+                                                          CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.redAccent)))
                                                   ],
                                                 ),
                                               ),
@@ -320,7 +319,7 @@ class _Profile extends State<Profile> {
                                                     else
                                                       Center(
                                                           child:
-                                                          CircularProgressIndicator())
+                                                          CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.green)))
                                                   ],
                                                 ),
                                               ),
@@ -399,7 +398,7 @@ class _Profile extends State<Profile> {
                           ? Container(
                         padding: EdgeInsets.only(bottom: 16),
                         alignment: Alignment.center,
-                        child: CircularProgressIndicator(),
+                        child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.yellowAccent)),
                       )
                           : SizedBox(),
                     ),

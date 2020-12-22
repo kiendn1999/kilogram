@@ -19,8 +19,6 @@ class FollowersPage extends StatefulWidget {
 }
 
 class _FollowersPage extends State<FollowersPage> {
-  // var _repository = Repository();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +77,7 @@ class _FollowersPage extends State<FollowersPage> {
                             ),
                           );
                         } else
-                          return Center(child: CircularProgressIndicator());
+                          return Center(child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.purple)));
                       },
                     ));
               }),

@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                       content: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(await widget._userRepository.checkLoginCredentials(_emailController.text, _passwordController.text)),
+                          Text("Email or Password isn't correct"),
                           Icon(Icons.error),
                         ],
                       ),

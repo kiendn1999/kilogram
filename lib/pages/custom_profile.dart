@@ -31,6 +31,7 @@ class _CustomProfile extends State<CustomProfile> {
   bool _loading = true;
   bool _canLoadMore = true;
   bool _isFollowing = false;
+  bool _isprocess=false;
 
   @override
   void initState() {
@@ -87,18 +88,26 @@ class _CustomProfile extends State<CustomProfile> {
   }
 
   _unfollowUser() async {
+    setState(() {
+      _isprocess=true;
+    });
     await FollowRepository()
         .actionUnFollow(UserRepository.getUserID, widget.customID);
     setState(() {
+      _isprocess=false;
       _isFollowing = false;
     });
   }
 
   _followUser() async {
+    setState(() {
+      _isprocess=true;
+    });
     await FollowRepository()
         .actionFollow(UserRepository.getUserID, widget.customID);
 
     setState(() {
+      _isprocess=false;
       _isFollowing = true;
     });
   }
@@ -181,14 +190,15 @@ class _CustomProfile extends State<CustomProfile> {
                                   ),
 
                                   //edit buton
-                                  RaisedButton(
+                                  if(_isprocess) Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.teal)))
+                                  else RaisedButton(
                                       onPressed: _followOrUnfollow,
                                       color: _isFollowing
                                           ? Colors.grey
-                                          : Colors.redAccent,
+                                          : Colors.green,
                                       shape: new RoundedRectangleBorder(
                                           borderRadius:
-                                              new BorderRadius.circular(10)),
+                                          new BorderRadius.circular(10)),
                                       child: Text(
                                         _isFollowing ? 'Unfollow' : 'Follow',
                                         style: TextStyle(color: Colors.white),
@@ -282,7 +292,7 @@ class _CustomProfile extends State<CustomProfile> {
                                                         else
                                                           Center(
                                                               child:
-                                                                  CircularProgressIndicator())
+                                                                  CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.redAccent)))
                                                       ],
                                                     ),
                                                   ),
@@ -337,7 +347,7 @@ class _CustomProfile extends State<CustomProfile> {
                                                         else
                                                           Center(
                                                               child:
-                                                                  CircularProgressIndicator())
+                                                                  CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.green)))
                                                       ],
                                                     ),
                                                   ),
@@ -388,7 +398,7 @@ class _CustomProfile extends State<CustomProfile> {
                               ? Container(
                                   padding: EdgeInsets.only(bottom: 16),
                                   alignment: Alignment.center,
-                                  child: CircularProgressIndicator(),
+                                  child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.blueAccent)),
                                 )
                               : SizedBox(),
                         ),

@@ -70,9 +70,9 @@ class UserRepository {
       throw Exception('Failed to load User');
   }
 
-  Future<List<UserSearch>> searchUser(String key, int pageKey) async {
+  Future<List<UserSearch>> searchUser(String key) async {
     final response = await ServerOperation().postDataToServer(
-        'https://leanhhuy.herokuapp.com/users/search?page=$pageKey',
+        'https://leanhhuy.herokuapp.com/users/search',
         jsonEncode(<String, String>{
           'userName': key,
         }));

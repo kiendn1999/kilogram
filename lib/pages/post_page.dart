@@ -27,6 +27,7 @@ class PostPage extends StatefulWidget {
 
 class _PostPage extends State<PostPage> {
   bool _isliked = false;
+  bool _isliking=false;
 
   @override
   void initState() {
@@ -51,18 +52,26 @@ class _PostPage extends State<PostPage> {
   }
 
   _unLike() async {
+    setState(() {
+      _isliking=true;
+    });
     await LikeRepository()
         .actionUnLike(widget._post1.postID, UserRepository.getUserID);
     setState(() {
+      _isliking=false;
       _isliked = false;
     });
   }
 
   _like() async {
+    setState(() {
+      _isliking=true;
+    });
     await LikeRepository()
         .actionLike(widget._post1.postID, UserRepository.getUserID);
 
     setState(() {
+      _isliking=false;
       _isliked = true;
     });
   }
@@ -156,17 +165,16 @@ class _PostPage extends State<PostPage> {
                       ),
                       Row(
                         children: <Widget>[
-                          IconButton(
+                          if(_isliking) Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent)))
+                          else IconButton(
                             onPressed: _LikeOrUnLike,
-                            icon: _isliked
-                                ? Icon(
-                                    FontAwesome.heart,
-                                    color: Colors.redAccent,
-                                  )
-                                : Icon(
-                                    FontAwesome.heart_o,
-                                    color: Colors.white,
-                                  ),
+                            icon: _isliked?Icon(
+                              FontAwesome.heart,
+                              color: Colors.redAccent,
+                            ):Icon(
+                              FontAwesome.heart_o,
+                              color: Colors.white,
+                            )
                           ),
                           FutureBuilder<List<LikeUser>>(future: LikeRepository().getAllLikeUser(widget._post1.postID),
                             builder: (context, snapshot){
@@ -193,7 +201,7 @@ class _PostPage extends State<PostPage> {
                                           text: " Peoples liked this post"),
                                     ]),
                                   ));
-                            else return Center(child: CircularProgressIndicator());
+                            else return Center(child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.deepOrange)));
                             }
                           )
                         ],
@@ -236,7 +244,7 @@ class _PostPage extends State<PostPage> {
                                             text: " Comments"),
                                       ]),
                                     ));
-                              else return Center(child: CircularProgressIndicator());
+                              else return Center(child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.green)));
                               }),
                         ],
                       ),

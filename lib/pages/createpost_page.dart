@@ -118,6 +118,7 @@ class _CreatePostPage extends State<CreatePostPage> {
   }
 
   _submit(context) async {
+    FocusScope.of(context).unfocus();
     if (!_isLoading && _image != null && _caption.isNotEmpty)
       setState(() {
         _isLoading = true;
@@ -148,7 +149,7 @@ class _CreatePostPage extends State<CreatePostPage> {
           ),
         ),
         actions: <Widget>[
-         if(_isLoading==true)Center(child: CircularProgressIndicator())
+         if(_isLoading==true)Center(child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.green)))
           else  IconButton(
            icon: Icon(Icons.add),
            onPressed: () {

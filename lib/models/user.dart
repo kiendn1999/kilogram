@@ -1,6 +1,3 @@
-import 'follow.dart';
-import 'post.dart';
-import 'comment.dart';
 
 class User {
   String userID;
