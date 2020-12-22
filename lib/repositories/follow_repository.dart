@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'serveroperations.dart';
+import 'user_repository.dart';
 
 class FollowRepository {
   Future<List<String>> getFollowers(String userID) async {
     final response = await ServerOperation()
-        .getDataFromServer("http://192.168.1.4:8000/users/$userID/follower");
+        .getDataFromServer("http://192.168.1.136:8000/users/$userID/follower");
 
     if (response.statusCode == 200) {
       List<String> idFollowers = List.from(jsonDecode(response.body)['follower']);
@@ -16,7 +17,7 @@ class FollowRepository {
 
   Future<List<String>> getFollowings(String userID) async {
     final response = await ServerOperation()
-        .getDataFromServer("http://192.168.1.4:8000/users/$userID/following");
+        .getDataFromServer("http://192.168.1.136:8000/users/$userID/following");
 
     if (response.statusCode == 200) {
       List<String> idFollowings = List.from(jsonDecode(response.body)['followings']);
@@ -26,12 +27,12 @@ class FollowRepository {
   }
 
   Future<bool> actionFollow(String ownerID, String guestID) async {
-    String url = 'http://192.168.1.4:8000/users/$ownerID/follower';
+    String url = 'http://192.168.1.136:8000/users/$ownerID/follower';
     final response = await ServerOperation().postDataToServer(
         url,
         jsonEncode(<String, String>{
           'following': guestID
-        }));
+        }),UserRepository.token);
 
     if (response.statusCode == 200)
       return jsonDecode(response.body)['success'];
@@ -39,12 +40,12 @@ class FollowRepository {
       throw Exception('Follow is Failed');
   }
   Future<bool> actionUnFollow(String ownerID, String guestID) async {
-    String url = 'http://192.168.1.4:8000/users/$ownerID/following';
+    String url = 'http://192.168.1.136:8000/users/$ownerID/following';
     final response = await ServerOperation().postDataToServer(
         url,
         jsonEncode(<String, String>{
           'following': guestID
-        }));
+        }),UserRepository.token);
 
     if (response.statusCode == 200)
       return jsonDecode(response.body)['success'];
@@ -53,7 +54,7 @@ class FollowRepository {
   }
 
   Future<bool> checkFollowing(String idOwner, String idUser) async {
-    String url = 'http://192.168.1.4:8000/users/$idOwner/checkfollow/$idUser';
+    String url = 'http://192.168.1.136:8000/users/$idOwner/checkfollow/$idUser';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200)

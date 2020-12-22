@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'package:kilogram_app/models/post.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
 
 import 'serveroperations.dart';
+import 'user_repository.dart';
 
 class PostRepository{
   String _getPostID;
 
   Future<List<Post1>> getAllPostsinUser(String userID, int pageKey) async {
-    String url = 'http://192.168.1.4:8000/users/$userID/posts?page=$pageKey';
+    String url = 'http://192.168.1.136:8000/users/$userID/posts?page=$pageKey';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
@@ -22,11 +24,12 @@ class PostRepository{
   Future<String> createAPostInUser(
       String image, String caption, String userID) async {
     final response = await ServerOperation().postDataToServer(
-        'http://192.168.1.4:8000/users/$userID/posts',
+        'http://192.168.1.136:8000/users/$userID/posts',
         jsonEncode(<String, String>{
           'image': image,
           'description': caption,
-        }));
+        },
+        ),UserRepository.token,);
 
     if (response.statusCode == 201) {
       _getPostID = jsonDecode(response.body)['postID'];
@@ -36,7 +39,7 @@ class PostRepository{
   }
 
   Future<Post1> getAPost(String postID) async {
-    String url = 'http://192.168.1.4:8000/posts/$postID';
+    String url = 'http://192.168.1.136:8000/posts/$postID';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
@@ -44,8 +47,8 @@ class PostRepository{
     }else throw Exception('Failed to load Post');
   }
   Future<bool> deleteAPost(String postID) async {
-    String url = 'http://192.168.1.4:8000/posts/$postID';
-    final response = await ServerOperation().deleteDataFromServer(url);
+    String url = 'http://192.168.1.136:8000/posts/$postID';
+    final response = await ServerOperation().deleteDataFromServer(url,UserRepository.token);
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['success'];

@@ -7,6 +7,7 @@ import 'serveroperations.dart';
 class UserRepository {
   bool isLogined = false;
   static String  getUserID;
+  static String token;
 
   //CustomCacheManager customCacheManager = CustomCacheManager();
 
@@ -14,8 +15,8 @@ class UserRepository {
 
   Future<String> registerUser(
       String lastName, String firstName, String email, String password) async {
-    final response = await ServerOperation().postDataToServer(
-        'http://192.168.1.4:8000/users/signup',
+    final response = await ServerOperation().postDataToServerforSignin(
+        'http://192.168.1.136:8000/users/signup',
         jsonEncode(<String, String>{
           'firstName': firstName,
           'lastName': lastName,
@@ -25,15 +26,17 @@ class UserRepository {
 
     if (response.statusCode == 201) {
       getUserID = jsonDecode(response.body)['_id'];
+      token = "bearer" + response.headers['authorization'];
+      print(token);
       return "true";
     } else
       return jsonDecode(response.body)['error']['message'];
   }
 
   Future<String> checkLoginCredentials(String email, String password) async {
-    String url = 'http://192.168.1.4:8000/users/signin';
+    String url = 'http://192.168.1.136:8000/users/signin';
 
-    final response = await ServerOperation().postDataToServer(
+    final response = await ServerOperation().postDataToServerforSignin(
       url,
       jsonEncode(<String, String>{'email': email, 'password': password}),
     );
@@ -42,13 +45,15 @@ class UserRepository {
         jsonDecode(response.body)['_id'] != null) {
       isLogined = true;
       getUserID = jsonDecode(response.body)['_id'];
+      token = "bearer" + response.headers['authorization'];
+      print(token);
       return "true";
     }
     return jsonDecode(response.body)['error']['message'];
   }
 
   Future<User> getInfoUser() async {
-    String url = 'http://192.168.1.4:8000/users/$getUserID';
+    String url = 'http://192.168.1.136:8000/users/$getUserID';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
@@ -58,7 +63,7 @@ class UserRepository {
   }
 
   Future<User> getInfoCusTomUser(String customID) async {
-    String url = 'http://192.168.1.4:8000/users/$customID';
+    String url = 'http://192.168.1.136:8000/users/$customID';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
@@ -69,10 +74,10 @@ class UserRepository {
 
   Future<List<UserSearch>> searchUser(String key, int pageKey) async {
     final response = await ServerOperation().postDataToServer(
-        'http://192.168.1.4:8000/users/search?page=$pageKey',
+        'http://192.168.1.136:8000/users/search?page=$pageKey',
         jsonEncode(<String, String>{
           'userName': key,
-        }));
+        }),UserRepository.token);
 
     if (response.statusCode == 200) {
       var userObjsJson = jsonDecode(response.body)['found'] as List;
@@ -85,13 +90,13 @@ class UserRepository {
 
   Future<String> updateUser( String firstName, String lastName, String email, String avatar, String userID) async {
     final response = await ServerOperation().patchDataToServer(
-        'http://192.168.1.4:8000/users/$userID',
+        'http://192.168.1.136:8000/users/$userID',
         jsonEncode(<String, String>{
           'firstName': firstName,
           'lastName': lastName,
           'email': email,
           'avatar': avatar,
-        }));
+        }),UserRepository.token);
     if (response.statusCode == 200) {
 
       return 'success';

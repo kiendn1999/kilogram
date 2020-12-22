@@ -1,18 +1,19 @@
 import 'dart:convert';
 
 import 'package:kilogram_app/models/like.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
 
 import 'serveroperations.dart';
 
 class LikeRepository{
   Future<bool> actionLike(String postIsLiked, String userLiked) async {
-    String url = 'http://192.168.1.4:8000/likes';
+    String url = 'http://192.168.1.136:8000/likes';
     final response = await ServerOperation().postDataToServer(
         url,
         jsonEncode(<String, String>{
           'userLiked': userLiked,
           'postIsLiked': postIsLiked
-        }));
+        }),UserRepository.token);
 
     if (response.statusCode == 201)
       return true;
@@ -20,13 +21,13 @@ class LikeRepository{
       throw Exception('Follow is Failed');
   }
   Future<String> actionUnLike(String postIsLiked, String userLiked) async {
-    String url = 'http://192.168.1.4:8000/likes/dislike';
+    String url = 'http://192.168.1.136:8000/likes/dislike';
     final response = await ServerOperation().postDataToServer(
         url,
         jsonEncode(<String, String>{
           'userLiked': userLiked,
           'postIsLiked': postIsLiked
-        }));
+        }),UserRepository.token);
 
     if (response.statusCode == 201)
       return jsonDecode(response.body)['status'];
@@ -35,7 +36,7 @@ class LikeRepository{
   }
 
   Future<List<LikeUser>> getAllLikeUser(String idPost) async {
-    String url = 'http://192.168.1.4:8000/posts/$idPost/likes';
+    String url = 'http://192.168.1.136:8000/posts/$idPost/likes';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
@@ -48,7 +49,7 @@ class LikeRepository{
   }
 
   Future<bool> checkLiked(String postIsLiked, String userLiked) async {
-    String url = 'http://192.168.1.4:8000/posts/$postIsLiked/likes/$userLiked';
+    String url = 'http://192.168.1.136:8000/posts/$postIsLiked/likes/$userLiked';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200)
