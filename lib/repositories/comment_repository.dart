@@ -8,8 +8,8 @@ import 'user_repository.dart';
 
 class CmtRepository{
   Future<List<Comment>> getAllComments(String idPost) async {
-    String url = 'http://192.168.1.136:8000/posts/$idPost/comments';
-    final response = await ServerOperation().getDataFromServer(url);
+    String url = 'https://leanhhuy.herokuapp.com/posts/$idPost/comments';
+    final response = await ServerOperation().getDataFromServer(url,UserRepository.token);
 
     if (response.statusCode == 200) {
 
@@ -20,8 +20,8 @@ class CmtRepository{
     }else throw Exception('Failed to load User');
   }
   Future<List<Comment>> getCommentsPage(String idPost, int page) async {
-    String url = 'http://192.168.1.136:8000/posts/$idPost/comments?page=$page';
-    final response = await ServerOperation().getDataFromServer(url);
+    String url = 'https://leanhhuy.herokuapp.com/posts/$idPost/comments?page=$page';
+    final response = await ServerOperation().getDataFromServer(url,UserRepository.token);
 
     if (response.statusCode == 200) {
 
@@ -35,7 +35,7 @@ class CmtRepository{
   Future<CommentResult> creteComment(
       String idPost, String content, String idUser) async {
     final response = await ServerOperation().postDataToServer(
-        'http://192.168.1.136:8000/comments',
+        'https://leanhhuy.herokuapp.com/comments',
         jsonEncode(<String, String>{
           'postWasCommented': idPost,
           'commented': content,
@@ -49,7 +49,7 @@ class CmtRepository{
   }
 
   Future<bool> deleteACmt(String cmtID) async {
-    String url = 'http://192.168.1.136:8000/comments/$cmtID';
+    String url = 'https://leanhhuy.herokuapp.com/comments/$cmtID';
     final response = await ServerOperation().deleteDataFromServer(url,UserRepository.token);
 
     if (response.statusCode == 200) {

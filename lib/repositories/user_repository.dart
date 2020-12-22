@@ -16,7 +16,7 @@ class UserRepository {
   Future<String> registerUser(
       String lastName, String firstName, String email, String password) async {
     final response = await ServerOperation().postDataToServerforSignin(
-        'http://192.168.1.136:8000/users/signup',
+        'https://leanhhuy.herokuapp.com/users/signup',
         jsonEncode(<String, String>{
           'firstName': firstName,
           'lastName': lastName,
@@ -26,7 +26,7 @@ class UserRepository {
 
     if (response.statusCode == 201) {
       getUserID = jsonDecode(response.body)['_id'];
-      token = "bearer" + response.headers['authorization'];
+      token = "bearer " + response.headers['authorization'];
       print(token);
       return "true";
     } else
@@ -34,7 +34,7 @@ class UserRepository {
   }
 
   Future<String> checkLoginCredentials(String email, String password) async {
-    String url = 'http://192.168.1.136:8000/users/signin';
+    String url = 'https://leanhhuy.herokuapp.com/users/signin';
 
     final response = await ServerOperation().postDataToServerforSignin(
       url,
@@ -45,7 +45,7 @@ class UserRepository {
         jsonDecode(response.body)['_id'] != null) {
       isLogined = true;
       getUserID = jsonDecode(response.body)['_id'];
-      token = "bearer" + response.headers['authorization'];
+      token = "bearer " + response.headers['authorization'];
       print(token);
       return "true";
     }
@@ -53,8 +53,8 @@ class UserRepository {
   }
 
   Future<User> getInfoUser() async {
-    String url = 'http://192.168.1.136:8000/users/$getUserID';
-    final response = await ServerOperation().getDataFromServer(url);
+    String url = 'https://leanhhuy.herokuapp.com/users/$getUserID';
+    final response = await ServerOperation().getDataFromServer(url, UserRepository.token);
 
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body)['user']);
@@ -63,8 +63,8 @@ class UserRepository {
   }
 
   Future<User> getInfoCusTomUser(String customID) async {
-    String url = 'http://192.168.1.136:8000/users/$customID';
-    final response = await ServerOperation().getDataFromServer(url);
+    String url = 'https://leanhhuy.herokuapp.com/users/$customID';
+    final response = await ServerOperation().getDataFromServer(url, UserRepository.token);
 
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body)['user']);
@@ -74,7 +74,7 @@ class UserRepository {
 
   Future<List<UserSearch>> searchUser(String key, int pageKey) async {
     final response = await ServerOperation().postDataToServer(
-        'http://192.168.1.136:8000/users/search?page=$pageKey',
+        'https://leanhhuy.herokuapp.com/users/search?page=$pageKey',
         jsonEncode(<String, String>{
           'userName': key,
         }),UserRepository.token);
@@ -90,7 +90,7 @@ class UserRepository {
 
   Future<String> updateUser( String firstName, String lastName, String email, String avatar, String userID) async {
     final response = await ServerOperation().patchDataToServer(
-        'http://192.168.1.136:8000/users/$userID',
+        'https://leanhhuy.herokuapp.com/users/$userID',
         jsonEncode(<String, String>{
           'firstName': firstName,
           'lastName': lastName,

@@ -9,8 +9,8 @@ class PostRepository{
   String _getPostID;
 
   Future<List<Post1>> getAllPostsinUser(String userID, int pageKey) async {
-    String url = 'http://192.168.1.136:8000/users/$userID/posts?page=$pageKey';
-    final response = await ServerOperation().getDataFromServer(url);
+    String url = 'https://leanhhuy.herokuapp.com/users/$userID/posts?page=$pageKey';
+    final response = await ServerOperation().getDataFromServer(url, UserRepository.token);
 
     if (response.statusCode == 200) {
 
@@ -24,7 +24,7 @@ class PostRepository{
   Future<String> createAPostInUser(
       String image, String caption, String userID) async {
     final response = await ServerOperation().postDataToServer(
-        'http://192.168.1.136:8000/users/$userID/posts',
+        'https://leanhhuy.herokuapp.com/users/$userID/posts',
         jsonEncode(<String, String>{
           'image': image,
           'description': caption,
@@ -39,15 +39,15 @@ class PostRepository{
   }
 
   Future<Post1> getAPost(String postID) async {
-    String url = 'http://192.168.1.136:8000/posts/$postID';
-    final response = await ServerOperation().getDataFromServer(url);
+    String url = 'https://leanhhuy.herokuapp.com/posts/$postID';
+    final response = await ServerOperation().getDataFromServer(url, UserRepository.token);
 
     if (response.statusCode == 200) {
       return Post1.fromJson(jsonDecode(response.body)['post']);
     }else throw Exception('Failed to load Post');
   }
   Future<bool> deleteAPost(String postID) async {
-    String url = 'http://192.168.1.136:8000/posts/$postID';
+    String url = 'https://leanhhuy.herokuapp.com/posts/$postID';
     final response = await ServerOperation().deleteDataFromServer(url,UserRepository.token);
 
     if (response.statusCode == 200) {

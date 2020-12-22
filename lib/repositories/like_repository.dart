@@ -7,7 +7,7 @@ import 'serveroperations.dart';
 
 class LikeRepository{
   Future<bool> actionLike(String postIsLiked, String userLiked) async {
-    String url = 'http://192.168.1.136:8000/likes';
+    String url = 'https://leanhhuy.herokuapp.com/likes';
     final response = await ServerOperation().postDataToServer(
         url,
         jsonEncode(<String, String>{
@@ -21,7 +21,7 @@ class LikeRepository{
       throw Exception('Follow is Failed');
   }
   Future<String> actionUnLike(String postIsLiked, String userLiked) async {
-    String url = 'http://192.168.1.136:8000/likes/dislike';
+    String url = 'https://leanhhuy.herokuapp.com/likes/dislike';
     final response = await ServerOperation().postDataToServer(
         url,
         jsonEncode(<String, String>{
@@ -36,8 +36,8 @@ class LikeRepository{
   }
 
   Future<List<LikeUser>> getAllLikeUser(String idPost) async {
-    String url = 'http://192.168.1.136:8000/posts/$idPost/likes';
-    final response = await ServerOperation().getDataFromServer(url);
+    String url = 'https://leanhhuy.herokuapp.com/posts/$idPost/likes';
+    final response = await ServerOperation().getDataFromServer(url,UserRepository.token);
 
     if (response.statusCode == 200) {
 
@@ -49,8 +49,8 @@ class LikeRepository{
   }
 
   Future<bool> checkLiked(String postIsLiked, String userLiked) async {
-    String url = 'http://192.168.1.136:8000/posts/$postIsLiked/likes/$userLiked';
-    final response = await ServerOperation().getDataFromServer(url);
+    String url = 'https://leanhhuy.herokuapp.com/posts/$postIsLiked/likes/$userLiked';
+    final response = await ServerOperation().getDataFromServer(url,UserRepository.token);
 
     if (response.statusCode == 200)
       return jsonDecode(response.body)['likeStatus'];

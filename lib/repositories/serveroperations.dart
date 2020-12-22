@@ -4,9 +4,13 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ServerOperation {
-  Future<http.Response> getDataFromServer(String url,/*
-      {Map<String, String> headers}*/) async {
-    return await http.get(url);
+  Future<http.Response> getDataFromServer(String url,String token) async {
+    return await http.get(url,
+      headers:  <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: token
+      },
+  );
   }
 
   Future<http.Response> postDataToServer(String url, var json, String token) async {
