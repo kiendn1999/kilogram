@@ -1,16 +1,22 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:kilogram_app/models/post.dart';
 import 'package:kilogram_app/models/user.dart';
+import 'package:kilogram_app/repositories/follow_repository.dart';
 import 'edit_profile.dart';
-import 'followers_page.dart';
-import 'follows_page.dart';
 import 'package:kilogram_app/repositories/user_repository.dart';
-import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:kilogram_app/repositories/post_repository.dart';
 
+import 'followers_page.dart';
+import 'post_page.dart';
+
+bool isUpdate=false;
 class Profile extends StatefulWidget {
   final UserRepository _userRepository;
 
@@ -23,9 +29,9 @@ class Profile extends StatefulWidget {
 }
 
 class _Profile extends State<Profile> {
-  Future<User> futureUser;
   static const double _endReachedThreshold = 200;
   static const int _itemsPerPage = 12;
+  bool refresh=false;
 
   final ScrollController _controller = ScrollController();
 
@@ -33,25 +39,27 @@ class _Profile extends State<Profile> {
   int _pageKey = 1;
   bool _loading = true;
   bool _canLoadMore = true;
-  User user;
+  int _totalPost;
 
 
 
   @override
-  Future<void> initState() {
+  void initState() {
     super.initState();
-    futureUser = widget._userRepository.getInfoUser();
     _controller.addListener(_onScroll);
     _getPosts();
+    _gettotalPost();
+  }
+
+  _gettotalPost() async {
+    User owner=await widget._userRepository.getInfoUser();
+    _totalPost=owner.totalPosts;
   }
 
   Future<void> _getPosts() async {
     _loading = true;
-    if (user==null){
-      user= await widget._userRepository.getInfoUser();
-    }
 
-    final newPosts = await PostRepository().getAllPostsinUser(user.userID, _pageKey);
+    final newPosts = await PostRepository().getAllPostsinUser(UserRepository.getUserID, _pageKey);
 
     setState(() {
       _posts.addAll(newPosts);
@@ -77,7 +85,6 @@ class _Profile extends State<Profile> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -87,7 +94,7 @@ class _Profile extends State<Profile> {
       child: SingleChildScrollView(
           controller: _controller,
           child: FutureBuilder<User>(
-            future: futureUser,
+            future:UserRepository().getInfoUser(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 Uint8List imagebytes = base64Decode(snapshot.data.avatar);
@@ -133,7 +140,6 @@ class _Profile extends State<Profile> {
                                         ? AssetImage("assets/default_avatar.jpg")
 
                                         : Image.memory(imagebytes).image,
-                                    // image: NetworkImage(widget.ipost.userImage)
                                   ),
                                 ),
                               ),
@@ -149,10 +155,13 @@ class _Profile extends State<Profile> {
 
                               //edit buton
                               RaisedButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
+                                onPressed: ()  {
+                                    Navigator.push(context,MaterialPageRoute(
                                       builder: (context) => EditProfile(
-                                          userRepository: widget._userRepository)));
+                                         snapshot.data))).then((value) {
+                                           setState(() {
+                                           });
+                                    });
                                 },
                                 color: Colors.red,
                                 shape: new RoundedRectangleBorder(
@@ -189,8 +198,7 @@ class _Profile extends State<Profile> {
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            Text(
-                                              "5",
+                                            Text(_totalPost.toString(),
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 20,
@@ -200,71 +208,124 @@ class _Profile extends State<Profile> {
                                           ],
                                         ),
                                       ),
-                                      Expanded(
-                                        child: InkWell(
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        FollowersPage()));
-                                          },
-                                          child: Column(
-                                            children: <Widget>[
-                                              SizedBox(
-                                                height: 10,
-                                              ),
-                                              Text(
-                                                "Followers",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 22,
-                                                  fontWeight: FontWeight.bold,
+                                      FutureBuilder<List<String>>(
+                                          future: FollowRepository()
+                                              .getFollowers(
+                                              snapshot.data.userID),
+                                          builder: (context, snapshot1) {
+                                            return Expanded(
+                                              child: InkWell(
+                                                onTap: () {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              FollowersPage(
+                                                                  isActionFollowers:
+                                                                  true,
+                                                                  idFollowers:
+                                                                  snapshot1
+                                                                      .data))).then((value) {
+                                                                        setState(() {
+
+                                                                        });
+                                                  });
+                                                },
+                                                child: Column(
+                                                  children: <Widget>[
+                                                    SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Text(
+                                                      "Followers",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 22,
+                                                        fontWeight:
+                                                        FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    if (snapshot1.hasData)
+                                                      Text(
+                                                        snapshot1
+                                                            .data.length
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                          color:
+                                                          Colors.white,
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                          FontWeight
+                                                              .w400,
+                                                        ),
+                                                      )
+                                                    else
+                                                      Center(
+                                                          child:
+                                                          CircularProgressIndicator())
+                                                  ],
                                                 ),
                                               ),
-                                              Text(
-                                                "5",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w400,
+                                            );
+                                          }),
+                                      FutureBuilder<List<String>>(
+                                          future: FollowRepository()
+                                              .getFollowings(
+                                              snapshot.data.userID),
+                                          builder: (context, snapshot2) {
+                                            return Expanded(
+                                              child: InkWell(
+                                                onTap: () {
+                                                  Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              FollowersPage(
+                                                                  isActionFollowers:
+                                                                  false,
+                                                                  idFollowers:
+                                                                  snapshot2
+                                                                      .data))).then((value) {
+                                                                        setState(() {
+
+                                                                        });
+                                                  });
+                                                },
+                                                child: Column(
+                                                  children: <Widget>[
+                                                    SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Text(
+                                                      "Following",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 22,
+                                                        fontWeight:
+                                                        FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    if (snapshot2.hasData)
+                                                      Text(
+                                                        snapshot2
+                                                            .data.length
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                          color:
+                                                          Colors.white,
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                          FontWeight
+                                                              .w400,
+                                                        ),
+                                                      )
+                                                    else
+                                                      Center(
+                                                          child:
+                                                          CircularProgressIndicator())
+                                                  ],
                                                 ),
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: InkWell(
-                                            onTap: () {
-                                              Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          FollowsPage()));
-                                            },
-                                            child: Column(
-                                              children: <Widget>[
-                                                SizedBox(
-                                                  height: 10,
-                                                ),
-                                                Text(
-                                                  "Follow",
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 22,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  "5",
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                ),
-                                              ],
-                                            )),
-                                      ),
+                                            );
+                                          }),
                                     ],
                                   ),
                                 ),
@@ -292,13 +353,38 @@ class _Profile extends State<Profile> {
                               Uint8List imagebytes = base64Decode(
                                   _posts[i].postImage);
                               return InkWell(
+                                onLongPress: (){
+                                  showAnimatedDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (BuildContext context) {
+                                      return ClassicGeneralDialogWidget(
+                                        titleText: 'Delete post ?',
+                                        contentText:
+                                        "Would you like to cotinue deleting this post ?",
+                                        onPositiveClick: () async {
+                                          await PostRepository().deleteAPost(_posts[i].postID);
+                                          Navigator.of(context).pop();
+                                          setState(() {
+                                            _totalPost--;
+                                            _posts.remove(_posts[i]);
+                                          });
+                                        },
+                                        onNegativeClick: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      );
+                                    },
+                                    animationType: DialogTransitionType.slideFromTop,
+                                    curve: Curves.fastOutSlowIn,
+                                    duration: Duration(seconds: 1),
+                                  );
+                                },
                                 onTap: () {
-                                  /* Navigator.of(context).push(
+                                   Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    PostPage(
-                                                      post: snapshot1.data[i],
-                                                    )));*/
+                                                    PostPage(_posts[i],snapshot.data)));
                                 },
                                 child: Container(
                                     color: Colors.black87,

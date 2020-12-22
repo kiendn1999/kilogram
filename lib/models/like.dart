@@ -1,15 +1,18 @@
-class Like {
-  int authorID;
-  int postID;
+class LikeUser {
+  String userID;
+  String lastName;
+  String firstName;
+  String avatar;
 
-  Like({this.authorID, this.postID});
+  LikeUser({this.userID, this.lastName, this.firstName, this.avatar});
 
-  Like.fromJson(Map<String, dynamic> json)
-      : authorID = json['authorID'],
-        postID = json['postID'];
+  factory LikeUser.fromJson(Map<String, dynamic> json) {
+    return LikeUser(
+      userID: json['_id'],
+      lastName: json['lastName'],
+      firstName: json['firstName'],
+      avatar: json['avatar'],
+    );
+  }
 
-  Map<String, dynamic> toJson() => {
-        'authorID': authorID,
-        'postID': postID,
-      };
 }

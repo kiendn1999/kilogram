@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kilogram_app/models/user.dart';
-import 'package:kilogram_app/pages/feed_page.dart';
-import 'package:kilogram_app/pages/profile.dart';
 import 'package:kilogram_app/repositories/post_repository.dart';
 import 'package:kilogram_app/repositories/user_repository.dart';
 
@@ -16,12 +14,12 @@ class CreatePostPage extends StatefulWidget {
   const CreatePostPage({Key key, UserRepository userRepository})
       : _userRepository = userRepository,
         super(key: key);
+
   @override
   _CreatePostPage createState() => _CreatePostPage();
 }
 
 class _CreatePostPage extends State<CreatePostPage> {
-
   File _image;
   TextEditingController _captionController = TextEditingController();
   String _caption = '';
@@ -35,7 +33,7 @@ class _CreatePostPage extends State<CreatePostPage> {
     getuserID();
   }
 
-void getuserID() async{
+  void getuserID() async {
     _user = await widget._userRepository.getInfoUser();
   }
 
@@ -119,11 +117,21 @@ void getuserID() async{
     return croppedImage;
   }
 
-  _submit() {
+  _submit(context) async {
+    if (!_isLoading && _image != null && _caption.isNotEmpty)
+      setState(() {
+        _isLoading = true;
+      });
 
     final bytes = _image.readAsBytesSync();
     _imageBase64Encode = base64Encode(bytes);
-    PostRepository().createAPostInUser(_imageBase64Encode, _caption, _user.userID);
+    await PostRepository().createAPostInUser(_imageBase64Encode, _caption, _user.userID);
+    setState(() {
+      _caption = '';
+      _image = null;
+      _isLoading = false;
+    });
+    _captionController.clear();
   }
 
   @override
@@ -143,9 +151,7 @@ void getuserID() async{
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              _submit();
-              return Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => CreatePostPage(userRepository: widget._userRepository)));
+              _submit(context);
             },
           ),
         ],
@@ -191,11 +197,10 @@ void getuserID() async{
                       padding: EdgeInsets.symmetric(horizontal: 30.0),
                       child: TextField(
                         controller: _captionController,
-                        style: TextStyle(fontSize: 18.0,color: Colors.white),
+                        style: TextStyle(fontSize: 18.0, color: Colors.white),
                         decoration: InputDecoration(
-                          labelText: 'Caption',
-                          labelStyle: TextStyle(color: Colors.white)
-                        ),
+                            labelText: 'Caption',
+                            labelStyle: TextStyle(color: Colors.white)),
                         onChanged: (input) => _caption = input,
                       ),
                     ),

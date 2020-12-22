@@ -1,26 +1,76 @@
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-
-import '../models/posts_data.dart';
+import 'package:intl/intl.dart';
+import 'package:kilogram_app/models/comment.dart';
+import 'package:kilogram_app/models/like.dart';
+import 'package:kilogram_app/models/post.dart';
+import 'package:kilogram_app/models/user.dart';
+import 'package:kilogram_app/repositories/comment_repository.dart';
+import 'package:kilogram_app/repositories/like_repository.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
 import 'comments_page.dart';
 import 'likes_page.dart';
 
 class PostPage extends StatefulWidget {
-  final Post post;
+  Post1 _post1;
+  User _user;
 
-  PostPage({this.post});
+  PostPage(this._post1, this._user);
 
   @override
   _PostPage createState() => _PostPage();
 }
 
 class _PostPage extends State<PostPage> {
-  bool _liked=false;
+  bool _isliked = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _setupIsLiked();
+  }
+
+  _setupIsLiked() async {
+    bool isLiked = await LikeRepository().checkLiked(widget._post1.postID, UserRepository.getUserID);
+    setState(() {
+      _isliked = isLiked;
+    });
+  }
+
+  _LikeOrUnLike() {
+    if (_isliked) {
+      _unLike();
+    } else {
+      _like();
+    }
+  }
+
+  _unLike() async {
+    await LikeRepository()
+        .actionUnLike(widget._post1.postID, UserRepository.getUserID);
+    setState(() {
+      _isliked = false;
+    });
+  }
+
+  _like() async {
+    await LikeRepository()
+        .actionLike(widget._post1.postID, UserRepository.getUserID);
+
+    setState(() {
+      _isliked = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    Uint8List avatarbytes = base64Decode(widget._user.avatar);
+    Uint8List postImagebytes = base64Decode(widget._post1.postImage);
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.black87,
@@ -52,7 +102,9 @@ class _PostPage extends State<PostPage> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(35),
                               child: Image(
-                                image: NetworkImage(widget.post.userImage),
+                                image: widget._user.avatar.isEmpty
+                                    ? AssetImage("assets/default_avatar.jpg")
+                                    : Image.memory(avatarbytes).image,
                                 width: 40,
                                 height: 40,
                                 fit: BoxFit.cover,
@@ -61,7 +113,9 @@ class _PostPage extends State<PostPage> {
                             SizedBox(
                               width: 10,
                             ),
-                            Text("Huy"),
+                            Text(widget._user.firstName +
+                                " " +
+                                widget._user.lastName),
                           ],
                         ),
                       ),
@@ -74,7 +128,9 @@ class _PostPage extends State<PostPage> {
                                 fontSize: 13,
                                 color: Colors.grey,
                               ),
-                              text: "${widget.post.date}"),
+                              text: DateFormat.yMMMMd('en_US').add_jm().format(
+                                  DateTime.parse(widget._post1.dateCreate)
+                                      .toLocal())),
                         ),
                       ),
                       Container(
@@ -88,12 +144,12 @@ class _PostPage extends State<PostPage> {
                                 style: TextStyle(
                                   color: Colors.white,
                                 ),
-                                text: " ${widget.post.caption}")),
+                                text: widget._post1.caption)),
                       ),
                       Container(
                         margin: EdgeInsets.symmetric(vertical: 10),
                         child: FadeInImage(
-                          image: NetworkImage(widget.post.postImage),
+                          image: Image.memory(postImagebytes).image,
                           placeholder: AssetImage("assets/placeholder.png"),
                           width: MediaQuery.of(context).size.width,
                         ),
@@ -101,130 +157,89 @@ class _PostPage extends State<PostPage> {
                       Row(
                         children: <Widget>[
                           IconButton(
-                            onPressed: () {
-                              setState(() => this._liked = !this._liked);
-                            },
-                            icon: this._liked
+                            onPressed: _LikeOrUnLike,
+                            icon: _isliked
                                 ? Icon(
-                              FontAwesome.heart,
-                              color: Colors.redAccent,
-                            )
+                                    FontAwesome.heart,
+                                    color: Colors.redAccent,
+                                  )
                                 : Icon(
-                              FontAwesome.heart_o,
-                              color: Colors.white,
-                            ),
+                                    FontAwesome.heart_o,
+                                    color: Colors.white,
+                                  ),
                           ),
-                          InkWell(onTap: (){Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => LikePage()));},child: RichText(
-                            softWrap: true,
-                            overflow: TextOverflow.visible,
-                            text: TextSpan(children: [
-                              TextSpan(
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                  text: "Liked by "),
-                              TextSpan(
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  text: "Huy "),
-                            ]),
-                          )),
+                          FutureBuilder<List<LikeUser>>(future: LikeRepository().getAllLikeUser(widget._post1.postID),
+                            builder: (context, snapshot){
+                            if(snapshot.hasData)
+                              return InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => LikePage(snapshot.data)));
+                                  },
+                                  child: RichText(
+                                    softWrap: true,
+                                    overflow: TextOverflow.visible,
+                                    text: TextSpan(children: [
+                                      TextSpan(
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          text: snapshot.data.length.toString()),
+                                      TextSpan(
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                          text: " Peoples liked this post"),
+                                    ]),
+                                  ));
+                            else return Center(child: CircularProgressIndicator());
+                            }
+                          )
                         ],
                       ),
                       Row(
                         children: <Widget>[
                           IconButton(
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => CommentPage()));
-                            },
                             icon: Icon(
                               FontAwesome.comment_o,
                               color: Colors.white,
                             ),
                           ),
-                          RichText(
-                            softWrap: true,
-                            overflow: TextOverflow.visible,
-                            text: TextSpan(children: [
-                              TextSpan(
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  text: "11 "),
-                              TextSpan(
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                  text: "comments"),
-                            ]),
-                          ),
+                          FutureBuilder<List<Comment>>(
+                            future: CmtRepository().getAllComments(widget._post1.postID),
+                              builder: (context,snapshot){
+                              if(snapshot.hasData)
+                                return InkWell(
+                                    onTap: (){
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                          builder: (context) => CommentPage(widget._post1.postID))).then((value){
+                                            setState(() {
+
+                                            });
+                                      });
+                                    },
+                                    child: RichText(
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
+                                      text: TextSpan(children: [
+                                        TextSpan(
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            text: snapshot.data.length.toString()),
+                                        TextSpan(
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                            text: " Comments"),
+                                      ]),
+                                    ));
+                              else return Center(child: CircularProgressIndicator());
+                              }),
                         ],
                       ),
-                      // Row(
-                      //   children: <Widget>[
-                      //     IconButton(
-                      //       onPressed: () {},
-                      //       icon: Icon(
-                      //         FontAwesome.edit,
-                      //         color: Colors.white,
-                      //       ),
-                      //     ),
-                      //     RichText(
-                      //         softWrap: true,
-                      //         overflow: TextOverflow.visible,
-                      //         text: TextSpan(
-                      //             style: TextStyle(
-                      //               color: Colors.white,
-                      //             ),
-                      //             text: "Edit")),
-                      //   ],
-                      // ),
-                      Row(
-                        children: <Widget>[
-                          IconButton(
-                            onPressed: () {
-                              showAnimatedDialog(
-                                context: context,
-                                barrierDismissible: true,
-                                builder: (BuildContext context) {
-                                  return ClassicGeneralDialogWidget(
-                                    titleText: 'Delete post ?',
-                                    contentText:
-                                        "Would you like to cotinue deleting this post ?",
-                                    onPositiveClick: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    onNegativeClick: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  );
-                                },
-                                animationType: DialogTransitionType.slideFromTop,
-                                curve: Curves.fastOutSlowIn,
-                                duration: Duration(seconds: 1),
-                              );
-                            },
-                            icon: Icon(
-                              FontAwesome.trash_o,
-                              color: Colors.white,
-                            ),
-                          ),
-                          RichText(
-                            softWrap: true,
-                            overflow: TextOverflow.visible,
-                            text: TextSpan(
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                                text: "Delete"),
-                          ),
-                        ],
-                      )
                     ],
                   )),
         ));

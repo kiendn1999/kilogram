@@ -1,21 +1,27 @@
+
 class Comment {
-  int commentID;
-  int authorID;
-  int postID;
+  String userID;
+  String lastName;
+  String firstName;
+  String avatar;
+  String dateCmt;
   String content;
+  String commentID;
 
-  Comment({this.commentID, this.authorID, this.postID, this.content});
 
-  Comment.fromJson(Map<String, dynamic> json)
-      : commentID = json['commentID'],
-        authorID = json['authorID'],
-        postID = json['postID'],
-        content = json['content'];
+  Comment({this.userID, this.lastName, this.firstName, this.avatar, this.dateCmt,
+    this.content, this.commentID});
 
-  Map<String, dynamic> toJson() => {
-        'commentID': commentID,
-        'authorID': authorID,
-        'postID': postID,
-        'content': content,
-      };
+  factory Comment.fromJson(Map<String, dynamic> json) {
+    return Comment(
+      userID: json['_id'],
+      lastName: json['lastName'],
+      firstName: json['firstName'],
+      avatar: json['avatar'],
+      dateCmt: json['dateComment'],
+      content: json['commented'],
+      commentID: json['commentID'],
+    );
+  }
+
 }

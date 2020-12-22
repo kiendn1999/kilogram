@@ -135,7 +135,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 style: TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                     icon: Icon(
-                                      Icons.email,
+                                      Icons.person,
                                       color: Colors.greenAccent,
                                     ),
                                     labelText: "Last Name",
@@ -161,7 +161,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 style: TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
                                     icon: Icon(
-                                      Icons.email,
+                                      Icons.person,
                                       color: Colors.greenAccent,
                                     ),
                                     labelText: "First Name",

@@ -1,5 +1,4 @@
-import 'comment.dart';
-import 'like.dart';
+
 
 class Post1 {
   String postID;
@@ -8,13 +7,8 @@ class Post1 {
   int likeCount;
   int cmtCount;
   String caption;
+  String dateCreate;
 
-  //String date;
-
-  // String userImage;
-  // String username;
-  // List<Like> likes = new List();
-  // List<Comment> comments = new List();
 
   Post1({
     this.postID,
@@ -23,10 +17,7 @@ class Post1 {
     this.caption,
     this.likeCount,
     this.cmtCount,
-    //this.date,
-
-    // this.userImage,
-    // this.username,
+    this.dateCreate
   });
 
   factory Post1.fromJson(Map<String, dynamic> json) {
@@ -34,18 +25,10 @@ class Post1 {
         postID: json['_id'],
         authorID: json['owner'],
         postImage: json['image'],
+        dateCreate: json['dateCreate'],
         likeCount: json['totalLike'],
         cmtCount: json['totalComment'],
         caption: json['description']);
   }
 
-  // Map<String, dynamic> toJson() => {
-  //       'postID': postID,
-  //       'authorID': authorID,
-  //       'postImage': postImage,
-  //       'likeCount': likeCount,
-  //       'cmtCount': cmtCount,
-  //       'caption': caption,
-  //       //'date': date
-  //     };
 }

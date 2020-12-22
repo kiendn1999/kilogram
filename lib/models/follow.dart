@@ -1,16 +1,15 @@
-class Follow {
-  int followerID;
-  int followeeID;
+class FollowCount {
+  int totalFollower;
+  int totalFollowing;
 
 
-  Follow({this.followerID, this.followeeID});
+  FollowCount({this.totalFollower, this.totalFollowing});
 
-  Follow.fromJson(Map<String, dynamic> json)
-      : followerID = json['followerID'],
-        followeeID = json['followeeID'];
+  factory FollowCount.fromJson(Map<String, dynamic> json) {
+    return FollowCount(
+      totalFollower: json['totalFollower'],
+      totalFollowing: json['totalFollowing'],
+    );
+  }
 
-  Map<String, dynamic> toJson() => {
-    'followerID': followerID,
-    'followeeID': followeeID
-  };
 }

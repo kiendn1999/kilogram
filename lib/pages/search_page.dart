@@ -1,9 +1,11 @@
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:kilogram_app/models/posts_data.dart';
+import 'package:kilogram_app/models/user_search.dart';
 import 'package:kilogram_app/pages/custom_profile.dart';
-import 'package:kilogram_app/pages/profile.dart';
+import 'package:kilogram_app/repositories/user_repository.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -12,22 +14,24 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   TextEditingController _searchController = TextEditingController();
-  //Future<QuerySnapshot> _users;
-  final _users=null;
+  Future<List<UserSearch>> _users;
 
-  _buildUserTile(Post ipost) {
+  _buildUserTile(UserSearch user) {
+    Uint8List imagebytes = base64Decode(
+        user.avatar);
     return ListTile(
       leading: CircleAvatar(
           radius: 20.0,
-          backgroundImage: NetworkImage(ipost.userImage)
-      ),
-      title: Text(ipost.username),
-      onTap: () =>
+          backgroundImage: user.avatar.length==0
+              ? AssetImage('assets/default_avatar.jpg')
+              : Image.memory(imagebytes).image),
+      title: Text(user.lastName, style: TextStyle(color: Colors.white)),
+       onTap: () =>
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) =>
-                  CustomProfile(ipost: ipost,
+                  CustomProfile(customID: user.userID
                   ),
             ),
           ),
@@ -38,71 +42,73 @@ class _SearchPageState extends State<SearchPage> {
     WidgetsBinding.instance
         .addPostFrameCallback((_) => _searchController.clear());
     setState(() {
-      //_users = null;
+      _users = null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black87,
-        title: TextField(
-          style: TextStyle(color: Colors.white),
-          controller: _searchController,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(vertical: 15.0),
-            border: InputBorder.none,
-            hintText: 'Search',
-            hintStyle: TextStyle(color: Colors.white),
-            prefixIcon: Icon(
-              Icons.search,
-              size: 30.0,
-              color: Colors.white,
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                Icons.clear,
+        appBar: AppBar(
+          backgroundColor: Colors.black87,
+          title: TextField(
+            style: TextStyle(color: Colors.white),
+            controller: _searchController,
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.symmetric(vertical: 15.0),
+              border: InputBorder.none,
+              hintText: 'Search',
+              hintStyle: TextStyle(color: Colors.white),
+              prefixIcon: Icon(
+                Icons.search,
+                size: 30.0,
                 color: Colors.white,
               ),
-              onPressed: _clearSearch,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  Icons.clear,
+                  color: Colors.white,
+                ),
+                onPressed: _clearSearch,
+              ),
+              filled: true,
             ),
-            filled: true,
-          ),
-          onSubmitted: (input) {
-            if (input.isNotEmpty) {
-              setState(() {
-                //_users = DatabaseService.searchUsers(input);
-              });
-            }
-          },
-        ),
-      ),
-      body: Container(color: Colors.black87,child: _users == null
-          ? Center(
-        child: Text('Search for a user', style: TextStyle(color: Colors.white),),
-      )
-          : FutureBuilder(
-        future: _users,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (snapshot.data.documents.length == 0) {
-            return Center(
-              child: Text('No users found! Please try again.'),
-            );
-          }
-          return ListView.builder(
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              return _buildUserTile(posts[index]);
+            onChanged: (input) {
+              if (input.isNotEmpty) {
+                setState(() {
+                  _users = UserRepository().searchUser(input, 1);
+                });
+              }
             },
-          );
-        },
-      ),)
-    );
+          ),
+        ),
+        body: Container(
+            color: Colors.black87,
+            child: _users == null
+                ? Center(
+                    child: Text(
+                      'Search for a user',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                : FutureBuilder<List<UserSearch>>(
+                    future: _users,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (snapshot.data.length == 0)
+                        return Center(
+                          child: Text('No users found! Please try again.', style: TextStyle(color: Colors.white)),
+                        );
+                      return ListView.builder(
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (context, index) {
+                          return _buildUserTile(snapshot.data[index]);
+                        },
+                      );
+                    })));
   }
 }

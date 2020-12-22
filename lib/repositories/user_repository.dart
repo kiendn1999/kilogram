@@ -1,12 +1,12 @@
 import 'dart:convert';
-import 'package:kilogram_app/models/post.dart';
 import 'package:kilogram_app/models/user.dart';
+import 'package:kilogram_app/models/user_search.dart';
 
 import 'serveroperations.dart';
 
 class UserRepository {
   bool isLogined = false;
-  String _getUserID;
+  static String  getUserID;
 
   //CustomCacheManager customCacheManager = CustomCacheManager();
 
@@ -15,7 +15,7 @@ class UserRepository {
   Future<String> registerUser(
       String lastName, String firstName, String email, String password) async {
     final response = await ServerOperation().postDataToServer(
-        'http://192.168.1.7:3000/users/signup',
+        'http://192.168.1.4:8000/users/signup',
         jsonEncode(<String, String>{
           'firstName': firstName,
           'lastName': lastName,
@@ -24,14 +24,14 @@ class UserRepository {
         }));
 
     if (response.statusCode == 201) {
-      _getUserID = jsonDecode(response.body)['_id'];
+      getUserID = jsonDecode(response.body)['_id'];
       return "true";
     } else
       return jsonDecode(response.body)['error']['message'];
   }
 
   Future<String> checkLoginCredentials(String email, String password) async {
-    String url = 'http://192.168.1.7:3000/users/signin';
+    String url = 'http://192.168.1.4:8000/users/signin';
 
     final response = await ServerOperation().postDataToServer(
       url,
@@ -41,88 +41,61 @@ class UserRepository {
     if (response.statusCode == 201 &&
         jsonDecode(response.body)['_id'] != null) {
       isLogined = true;
-      _getUserID = jsonDecode(response.body)['_id'];
+      getUserID = jsonDecode(response.body)['_id'];
       return "true";
     }
     return jsonDecode(response.body)['error']['message'];
   }
 
   Future<User> getInfoUser() async {
-    String url = 'http://192.168.1.7:3000/users/$_getUserID';
-    print(_getUserID);
+    String url = 'http://192.168.1.4:8000/users/$getUserID';
     final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
-
       return User.fromJson(jsonDecode(response.body)['user']);
-    }else throw Exception('Failed to load User');
+    } else
+      throw Exception('Failed to load User');
   }
 
-// Future<bool> checkIfUserExists(User user) async {
-//   String firstName = user.firstName,
-//       lastName = user.lastName,
-//       nickName = user.nickName,
-//       email = user.email,
-//       password = user.password;
-//
-//   String url =
-//       "https://bismarck.sdsu.edu/api/instapost-upload/newuser?firstname=$firstName&lastname=$lastName&nickname=$nickName&email=$email&password=$password";
-//   final response = await ServerOperation().getDataFromServer(url);
-//
-//   if (response.statusCode == 200) {
-//     return true;
-//   }
-//
-//   return false;
-// }
+  Future<User> getInfoCusTomUser(String customID) async {
+    String url = 'http://192.168.1.4:8000/users/$customID';
+    final response = await ServerOperation().getDataFromServer(url);
 
-// Future<bool> checkIfNickNameIsTaken(String nickName) async {
-//   String url =
-//       " https://bismarck.sdsu.edu/api/instapost-query/nickname-exists?nickname=$nickName";
-//   final response = await ServerOperation().getDataFromServer(url);
-//
-//   if (response.statusCode == 200 &&
-//       jsonDecode(response.body)["result"] == true) {
-//     return true;
-//   } else
-//     return false;
-// }
-//
-// Future<bool> checkIfEmailIsTaken(String email) async {
-//   String url =
-//       "https://bismarck.sdsu.edu/api/instapost-query/email-exists?email=$email";
-//   final response = await ServerOperation().getDataFromServer(url);
-//   if (response.statusCode == 200 &&
-//       jsonDecode(response.body)["result"] == true) {
-//     return true;
-//   } else
-//     return false;
-// }
-//
-// Future<List<String>> getAllNickNames() async {
-//   if (await ServerOperation().checkConnection()) {
-//     String url = "https://bismarck.sdsu.edu/api/instapost-query/nicknames";
-//     final response = await ServerOperation().getDataFromServer(url);
-//     if (response.statusCode == 200)
-//       customCacheManager.writeDataToCache(
-//           'nicknames.json', response.body.toString());
-//     return List.from(jsonDecode(response.body)["nicknames"]);
-//   } else {
-//     String response =
-//         await customCacheManager.readDataFromCache('nicknames.json');
-//     return List.from(jsonDecode(response)["nicknames"]);
-//   }
-// }
+    if (response.statusCode == 200) {
+      return User.fromJson(jsonDecode(response.body)['user']);
+    } else
+      throw Exception('Failed to load User');
+  }
 
-// Future<int> getPendingPostsForSpecificUser(
-//     String user, String password) async {
-//   if (await ServerOperation().checkConnection()) {
-//     List<Map<String, dynamic>> pendingUploads =
-//     await DatabaseHelper.instance.queryForAnEmail(user);
-//     if (pendingUploads.length > 0)
-//       return await PostOperations()
-//           .uploadPendingPost(pendingUploads, password);
-//   }
-//   return 0;
-// }
+  Future<List<UserSearch>> searchUser(String key, int pageKey) async {
+    final response = await ServerOperation().postDataToServer(
+        'http://192.168.1.4:8000/users/search?page=$pageKey',
+        jsonEncode(<String, String>{
+          'userName': key,
+        }));
+
+    if (response.statusCode == 200) {
+      var userObjsJson = jsonDecode(response.body)['found'] as List;
+      List<UserSearch> Users = userObjsJson.map((userJson) => UserSearch.fromJson(userJson)).toList();
+
+      return Users;
+    } else
+      return jsonDecode(response.body)['error']['message'];
+  }
+
+  Future<String> updateUser( String firstName, String lastName, String email, String avatar, String userID) async {
+    final response = await ServerOperation().patchDataToServer(
+        'http://192.168.1.4:8000/users/$userID',
+        jsonEncode(<String, String>{
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': email,
+          'avatar': avatar,
+        }));
+    if (response.statusCode == 200) {
+
+      return 'success';
+    }else throw Exception('Failed to update User');
+
+  }
 }
