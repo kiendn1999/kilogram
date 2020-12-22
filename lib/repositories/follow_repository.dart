@@ -6,7 +6,7 @@ import 'user_repository.dart';
 class FollowRepository {
   Future<List<String>> getFollowers(String userID) async {
     final response = await ServerOperation()
-        .getDataFromServer("https://leanhhuy.herokuapp.com/users/$userID/follower",UserRepository.token)
+        .getDataFromServer("https://leanhhuy.herokuapp.com/users/$userID/follower")
     ;
 
     if (response.statusCode == 200) {
@@ -18,7 +18,7 @@ class FollowRepository {
 
   Future<List<String>> getFollowings(String userID) async {
     final response = await ServerOperation()
-        .getDataFromServer("https://leanhhuy.herokuapp.com/users/$userID/following",UserRepository.token);
+        .getDataFromServer("https://leanhhuy.herokuapp.com/users/$userID/following");
 
     if (response.statusCode == 200) {
       List<String> idFollowings = List.from(jsonDecode(response.body)['followings']);
@@ -33,7 +33,7 @@ class FollowRepository {
         url,
         jsonEncode(<String, String>{
           'following': guestID
-        }),UserRepository.token);
+        }));
 
     if (response.statusCode == 200)
       return jsonDecode(response.body)['success'];
@@ -46,7 +46,7 @@ class FollowRepository {
         url,
         jsonEncode(<String, String>{
           'following': guestID
-        }),UserRepository.token);
+        }));
 
     if (response.statusCode == 200)
       return jsonDecode(response.body)['success'];
@@ -56,7 +56,7 @@ class FollowRepository {
 
   Future<bool> checkFollowing(String idOwner, String idUser) async {
     String url = 'https://leanhhuy.herokuapp.com/users/$idOwner/checkfollow/$idUser';
-    final response = await ServerOperation().getDataFromServer(url, UserRepository.token);
+    final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200)
       return jsonDecode(response.body)['followStatus'];

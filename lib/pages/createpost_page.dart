@@ -148,12 +148,13 @@ class _CreatePostPage extends State<CreatePostPage> {
           ),
         ),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              _submit(context);
-            },
-          ),
+         if(_isLoading==true)Center(child: CircularProgressIndicator())
+          else  IconButton(
+           icon: Icon(Icons.add),
+           onPressed: () {
+             _submit(context);
+           },
+         ),
         ],
       ),
       body: Container(

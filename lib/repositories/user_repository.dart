@@ -9,8 +9,6 @@ class UserRepository {
   static String  getUserID;
   static String token;
 
-  //CustomCacheManager customCacheManager = CustomCacheManager();
-
   UserRepository() {}
 
   Future<String> registerUser(
@@ -54,7 +52,7 @@ class UserRepository {
 
   Future<User> getInfoUser() async {
     String url = 'https://leanhhuy.herokuapp.com/users/$getUserID';
-    final response = await ServerOperation().getDataFromServer(url, UserRepository.token);
+    final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body)['user']);
@@ -64,7 +62,7 @@ class UserRepository {
 
   Future<User> getInfoCusTomUser(String customID) async {
     String url = 'https://leanhhuy.herokuapp.com/users/$customID';
-    final response = await ServerOperation().getDataFromServer(url, UserRepository.token);
+    final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
       return User.fromJson(jsonDecode(response.body)['user']);
@@ -77,7 +75,7 @@ class UserRepository {
         'https://leanhhuy.herokuapp.com/users/search?page=$pageKey',
         jsonEncode(<String, String>{
           'userName': key,
-        }),UserRepository.token);
+        }));
 
     if (response.statusCode == 200) {
       var userObjsJson = jsonDecode(response.body)['found'] as List;
@@ -96,7 +94,7 @@ class UserRepository {
           'lastName': lastName,
           'email': email,
           'avatar': avatar,
-        }),UserRepository.token);
+        }));
     if (response.statusCode == 200) {
 
       return 'success';

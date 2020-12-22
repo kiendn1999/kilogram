@@ -29,7 +29,6 @@ class _EditProfile extends State<EditProfile> {
 
   bool showPassword = false;
   File _image;
-  bool _isLoading = false;
   bool _isAvaChange=false;
   String _imageBase64Encode;
   String _firstname = '';
@@ -123,7 +122,6 @@ class _EditProfile extends State<EditProfile> {
 
   submit() {
     print(_firstname);print(_lastname);print(_email);
-    //UserRepository().updateUser(_firstname, _firstname, user.userID);
     UserRepository().updateUser(_firstname, _lastname, _email, _imageBase64Encode, UserRepository.getUserID);
   }
 
@@ -245,7 +243,6 @@ class _EditProfile extends State<EditProfile> {
                                   submit();
                                   FocusScope.of(context).unfocus();
                                   Navigator.of(context).pop();
-                                  Navigator.pop(context);
                                 },
                                 onNegativeClick: () {
                                   Navigator.of(context).pop();

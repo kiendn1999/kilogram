@@ -1,16 +1,14 @@
 import 'dart:convert';
 import 'package:kilogram_app/models/post.dart';
-import 'package:kilogram_app/repositories/user_repository.dart';
 
 import 'serveroperations.dart';
-import 'user_repository.dart';
 
 class PostRepository{
   String _getPostID;
 
   Future<List<Post1>> getAllPostsinUser(String userID, int pageKey) async {
     String url = 'https://leanhhuy.herokuapp.com/users/$userID/posts?page=$pageKey';
-    final response = await ServerOperation().getDataFromServer(url, UserRepository.token);
+    final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
 
@@ -28,8 +26,8 @@ class PostRepository{
         jsonEncode(<String, String>{
           'image': image,
           'description': caption,
-        },
-        ),UserRepository.token,);
+        }
+        ),);
 
     if (response.statusCode == 201) {
       _getPostID = jsonDecode(response.body)['postID'];
@@ -40,7 +38,7 @@ class PostRepository{
 
   Future<Post1> getAPost(String postID) async {
     String url = 'https://leanhhuy.herokuapp.com/posts/$postID';
-    final response = await ServerOperation().getDataFromServer(url, UserRepository.token);
+    final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
       return Post1.fromJson(jsonDecode(response.body)['post']);
@@ -48,7 +46,7 @@ class PostRepository{
   }
   Future<bool> deleteAPost(String postID) async {
     String url = 'https://leanhhuy.herokuapp.com/posts/$postID';
-    final response = await ServerOperation().deleteDataFromServer(url,UserRepository.token);
+    final response = await ServerOperation().deleteDataFromServer(url);
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['success'];

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:kilogram_app/models/like.dart';
-import 'package:kilogram_app/repositories/user_repository.dart';
 
 import 'serveroperations.dart';
 
@@ -13,7 +12,7 @@ class LikeRepository{
         jsonEncode(<String, String>{
           'userLiked': userLiked,
           'postIsLiked': postIsLiked
-        }),UserRepository.token);
+        }));
 
     if (response.statusCode == 201)
       return true;
@@ -27,7 +26,7 @@ class LikeRepository{
         jsonEncode(<String, String>{
           'userLiked': userLiked,
           'postIsLiked': postIsLiked
-        }),UserRepository.token);
+        }));
 
     if (response.statusCode == 201)
       return jsonDecode(response.body)['status'];
@@ -37,7 +36,7 @@ class LikeRepository{
 
   Future<List<LikeUser>> getAllLikeUser(String idPost) async {
     String url = 'https://leanhhuy.herokuapp.com/posts/$idPost/likes';
-    final response = await ServerOperation().getDataFromServer(url,UserRepository.token);
+    final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
 
@@ -50,7 +49,7 @@ class LikeRepository{
 
   Future<bool> checkLiked(String postIsLiked, String userLiked) async {
     String url = 'https://leanhhuy.herokuapp.com/posts/$postIsLiked/likes/$userLiked';
-    final response = await ServerOperation().getDataFromServer(url,UserRepository.token);
+    final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200)
       return jsonDecode(response.body)['likeStatus'];

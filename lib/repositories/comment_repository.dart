@@ -9,7 +9,7 @@ import 'user_repository.dart';
 class CmtRepository{
   Future<List<Comment>> getAllComments(String idPost) async {
     String url = 'https://leanhhuy.herokuapp.com/posts/$idPost/comments';
-    final response = await ServerOperation().getDataFromServer(url,UserRepository.token);
+    final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
 
@@ -21,7 +21,7 @@ class CmtRepository{
   }
   Future<List<Comment>> getCommentsPage(String idPost, int page) async {
     String url = 'https://leanhhuy.herokuapp.com/posts/$idPost/comments?page=$page';
-    final response = await ServerOperation().getDataFromServer(url,UserRepository.token);
+    final response = await ServerOperation().getDataFromServer(url);
 
     if (response.statusCode == 200) {
 
@@ -40,7 +40,7 @@ class CmtRepository{
           'postWasCommented': idPost,
           'commented': content,
           'userCommented': idUser,
-        }),UserRepository.token);
+        }));
 
     if (response.statusCode == 201) {
       return CommentResult.fromJson(jsonDecode(response.body)['comment']);
@@ -50,7 +50,7 @@ class CmtRepository{
 
   Future<bool> deleteACmt(String cmtID) async {
     String url = 'https://leanhhuy.herokuapp.com/comments/$cmtID';
-    final response = await ServerOperation().deleteDataFromServer(url,UserRepository.token);
+    final response = await ServerOperation().deleteDataFromServer(url);
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['success'];
