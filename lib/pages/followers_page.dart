@@ -66,7 +66,8 @@ class _FollowersPage extends State<FollowersPage> {
                             leading: GestureDetector(
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CustomProfile(customID: snapshot.data.userID)));
+                                    builder: (context) => CustomProfile(
+                                        customID: snapshot.data.userID)));
                               },
                               child: CircleAvatar(
                                 backgroundImage: snapshot.data.avatar.isEmpty
@@ -77,7 +78,10 @@ class _FollowersPage extends State<FollowersPage> {
                             ),
                           );
                         } else
-                          return Center(child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.purple)));
+                          return Center(
+                              child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.purple)));
                       },
                     ));
               }),

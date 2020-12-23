@@ -20,8 +20,6 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfile extends State<EditProfile> {
-
-
   @override
   void initState() {
     super.initState();
@@ -29,7 +27,7 @@ class _EditProfile extends State<EditProfile> {
 
   bool showPassword = false;
   File _image;
-  bool _isAvaChange=false;
+  bool _isAvaChange = false;
   String _imageBase64Encode;
   String _firstname = '';
   String _lastname = '';
@@ -37,7 +35,7 @@ class _EditProfile extends State<EditProfile> {
   TextEditingController _firstnameController = TextEditingController();
   TextEditingController _lastnameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
-
+  bool _isEditing = false;
 
   _showSelectImageDialog() {
     return Platform.isIOS ? _iosBottomSheet() : _androidDialog();
@@ -107,7 +105,7 @@ class _EditProfile extends State<EditProfile> {
       imageFile = await _cropImage(imageFile);
       setState(() {
         _image = imageFile;
-        _isAvaChange=true;
+        _isAvaChange = true;
       });
     }
   }
@@ -118,11 +116,6 @@ class _EditProfile extends State<EditProfile> {
       aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
     );
     return croppedImage;
-  }
-
-  submit() {
-    print(_firstname);print(_lastname);print(_email);
-    UserRepository().updateUser(_firstname, _lastname, _email, _imageBase64Encode, UserRepository.getUserID);
   }
 
   @override
@@ -156,7 +149,7 @@ class _EditProfile extends State<EditProfile> {
                             border: Border.all(
                                 width: 4,
                                 color:
-                                Theme.of(context).scaffoldBackgroundColor),
+                                    Theme.of(context).scaffoldBackgroundColor),
                             boxShadow: [
                               BoxShadow(
                                   spreadRadius: 2,
@@ -167,7 +160,9 @@ class _EditProfile extends State<EditProfile> {
                             shape: BoxShape.circle,
                             image: DecorationImage(
                                 fit: BoxFit.cover,
-                                image: widget._owner.avatar.isEmpty?avatardefault():avatar(widget._owner.avatar)),
+                                image: widget._owner.avatar.isEmpty
+                                    ? avatardefault()
+                                    : avatar(widget._owner.avatar)),
                           ),
                         ),
                         //edit avatar
@@ -198,9 +193,12 @@ class _EditProfile extends State<EditProfile> {
                   SizedBox(
                     height: 35,
                   ),
-                  buildTextField("First Name", widget._owner.firstName, false, _firstnameController,1),
-                  buildTextField("Last Name", widget._owner.lastName, false,_lastnameController,2),
-                  buildTextField("Email",widget._owner.email, false,_emailController,3),
+                  buildTextField("First Name", widget._owner.firstName, false,
+                      _firstnameController, 1),
+                  buildTextField("Last Name", widget._owner.lastName, false,
+                      _lastnameController, 2),
+                  buildTextField(
+                      "Email", widget._owner.email, false, _emailController, 3),
                   //buildTextField("Password", "*************", true),
                   SizedBox(
                     height: 30,
@@ -222,44 +220,67 @@ class _EditProfile extends State<EditProfile> {
                                 letterSpacing: 2,
                                 color: Colors.white)),
                       ),
-                      RaisedButton(
-                        padding: EdgeInsets.symmetric(horizontal: 50),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                        color: Colors.lightGreen,
-                        onPressed: () {
-                          showAnimatedDialog(
-                            context: context,
-                            barrierDismissible: true,
-                            builder: (BuildContext context) {
-                              return ClassicGeneralDialogWidget(
-                                titleText: 'Saving change ?',
-                                contentText:
-                                "Would you like to cotinue saving this change info ?",
-                                onPositiveClick: () {
-                                  if (_lastname=='') _lastname = widget._owner.lastName;
-                                  if (_firstname=='') _firstname =  widget._owner.firstName;
-                                  if (_email=='') _email =  widget._owner.email;
-                                  submit();
-                                  FocusScope.of(context).unfocus();
-                                  Navigator.of(context).pop();
-                                },
-                                onNegativeClick: () {
-                                  Navigator.of(context).pop();
-                                },
-                              );
-                            },
-                            animationType: DialogTransitionType.scaleRotate,
-                            curve: Curves.fastOutSlowIn,
-                            duration: Duration(seconds: 1),
-                          );
-                        },
-                        child: Text("Save",
-                            style: TextStyle(
-                                fontSize: 14,
-                                letterSpacing: 2,
-                                color: Colors.white)),
-                      ),
+                      if (_isEditing)
+                        Center(
+                            child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.greenAccent)))
+                      else
+                        RaisedButton(
+                          padding: EdgeInsets.symmetric(horizontal: 50),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          color: Colors.lightGreen,
+                          onPressed: () {
+                            showAnimatedDialog(
+                              context: context,
+                              barrierDismissible: _isEditing ? false : true,
+                              builder: (BuildContext context) {
+                                return ClassicGeneralDialogWidget(
+                                  titleText: 'Saving change ?',
+                                  contentText:
+                                      "Would you like to cotinue saving this change info ?",
+                                  onPositiveClick: () async {
+                                    if (_lastname == '')
+                                      _lastname = widget._owner.lastName;
+                                    if (_firstname == '')
+                                      _firstname = widget._owner.firstName;
+                                    if (_email == '')
+                                      _email = widget._owner.email;
+                                    print(_firstname);
+                                    print(_lastname);
+                                    print(_email);
+                                    Navigator.of(context).pop();
+                                    FocusScope.of(context).unfocus();
+                                    setState(() {
+                                      _isEditing = true;
+                                    });
+                                    await UserRepository().updateUser(
+                                        _firstname,
+                                        _lastname,
+                                        _email,
+                                        _imageBase64Encode,
+                                        UserRepository.getUserID);
+                                    setState(() {
+                                      _isEditing = false;
+                                    });
+                                  },
+                                  onNegativeClick: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                );
+                              },
+                              animationType: DialogTransitionType.scaleRotate,
+                              curve: Curves.fastOutSlowIn,
+                              duration: Duration(seconds: 1),
+                            );
+                          },
+                          child: Text("Save",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  letterSpacing: 2,
+                                  color: Colors.white)),
+                        )
                     ],
                   ),
                 ],
@@ -270,60 +291,59 @@ class _EditProfile extends State<EditProfile> {
   }
 
   ImageProvider avatardefault() {
-    if(_isAvaChange && _image!=null) {
+    if (_isAvaChange && _image != null) {
       final bytes = _image.readAsBytesSync();
       _imageBase64Encode = base64Encode(bytes);
       return FileImage(_image);
     }
     ho();
-      return AssetImage("assets/default_avatar.jpg");
+    return AssetImage("assets/default_avatar.jpg");
   }
+
   Future<void> ho() async {
     ByteData bytes = await rootBundle.load('assets/default_avatar.jpg');
     var buffer = bytes.buffer;
-    _imageBase64Encode= base64.encode(Uint8List.view(buffer));
+    _imageBase64Encode = base64.encode(Uint8List.view(buffer));
   }
 
-  ImageProvider avatar(String stringAva)
-  {
-    if(_isAvaChange && _image!=null) {
+  ImageProvider avatar(String stringAva) {
+    if (_isAvaChange && _image != null) {
       final bytes = _image.readAsBytesSync();
       _imageBase64Encode = base64Encode(bytes);
-    return FileImage(_image);
+      return FileImage(_image);
     }
-    _imageBase64Encode=stringAva;
-    Uint8List imagebytes=base64Decode(stringAva);
+    _imageBase64Encode = stringAva;
+    Uint8List imagebytes = base64Decode(stringAva);
     return Image.memory(imagebytes).image;
   }
 
-
-  Widget buildTextField(
-      String labelText, String palaceholder, bool isPassword, TextEditingController textEditingController, int type) {
+  Widget buildTextField(String labelText, String palaceholder, bool isPassword,
+      TextEditingController textEditingController, int type) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 30),
       child: TextField(
         controller: textEditingController,
         style: TextStyle(color: Colors.white),
         cursorColor: Colors.white,
-        obscureText: isPassword?!this.showPassword:false,
+        obscureText: isPassword ? !this.showPassword : false,
         onChanged: (input) {
-          if(type==1) return _firstname = input;
-          if(type==2) return _lastname = input;
-          if(type==3) return _email=input;
+          if (type == 1) return _firstname = input;
+          if (type == 2) return _lastname = input;
+          if (type == 3) return _email = input;
         },
         decoration: InputDecoration(
             suffixIcon: isPassword
                 ? IconButton(
-              icon: Icon(
-                Icons.remove_red_eye,
-                color: this.showPassword ? Colors.redAccent : Colors.grey,
-              ),
-              onPressed: () {
-                setState(() {
-                  showPassword = !showPassword;
-                });
-              },
-            )
+                    icon: Icon(
+                      Icons.remove_red_eye,
+                      color: this.showPassword ? Colors.redAccent : Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        showPassword = !showPassword;
+                      });
+                    },
+                  )
                 : null,
             contentPadding: EdgeInsets.only(bottom: 3),
             labelText: labelText,

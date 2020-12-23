@@ -36,7 +36,9 @@ class _CommentPage extends State<CommentPage> {
 
   final TextEditingController _commentController = TextEditingController();
   bool _isCommenting = false;
-  bool _isPostingCmt=false;
+  bool _isPostingCmt = false;
+  bool _isDeleting = false;
+  int _isPicked;
 
   @override
   void initState() {
@@ -83,78 +85,90 @@ class _CommentPage extends State<CommentPage> {
   }
 
   _buildComment(Comment comment, int i) {
+    if (_isDeleting && i == _isPicked)
+      return Center(
+          child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  i % 2 == 0 ? Colors.white : Colors.greenAccent)));
     Uint8List imagebytes = base64Decode(comment.avatar);
     return InkWell(
-      onLongPress: (){
-        if(comment.userID!=UserRepository.getUserID) return ;
-        showAnimatedDialog(
-          context: context,
-          barrierDismissible: true,
-          builder: (BuildContext context) {
-            return ClassicGeneralDialogWidget(
-              titleText: 'Delete comment ?',
-              contentText:
-              "Would you like to cotinue deleting this comment ?",
-              onPositiveClick: () async {
-                await CmtRepository().deleteACmt(comment.commentID);
-                FocusScope.of(context).unfocus();
-                Navigator.of(context).pop();
-                setState(() {
-                  _comments.remove(comment);
-                });
-              },
-              onNegativeClick: () {
-                FocusScope.of(context).unfocus();
-                Navigator.of(context).pop();
-              },
-            );
-          },
-          animationType: DialogTransitionType.slideFromLeftFade,
-          curve: Curves.fastOutSlowIn,
-          duration: Duration(seconds: 1),
-        );
-      },
+        onLongPress: () {
+          _isPicked = i;
+          if (comment.userID != UserRepository.getUserID) return;
+          showAnimatedDialog(
+            context: context,
+            barrierDismissible: true,
+            builder: (BuildContext context) {
+              return ClassicGeneralDialogWidget(
+                titleText: 'Delete comment ?',
+                contentText:
+                    "Would you like to cotinue deleting this comment ?",
+                onPositiveClick: () async {
+                  Navigator.of(context).pop();
+                  FocusScope.of(context).unfocus();
+                  setState(() {
+                    _isDeleting = true;
+                  });
+                  await CmtRepository().deleteACmt(comment.commentID);
+                  setState(() {
+                    _comments.remove(comment);
+                    _isDeleting = false;
+                  });
+                },
+                onNegativeClick: () {
+                  FocusScope.of(context).unfocus();
+                  Navigator.of(context).pop();
+                },
+              );
+            },
+            animationType: DialogTransitionType.slideFromLeftFade,
+            curve: Curves.fastOutSlowIn,
+            duration: Duration(seconds: 1),
+          );
+        },
         child: Container(
-      decoration: BoxDecoration(
-        color: i % 2 == 0 ? Colors.white : Colors.greenAccent,
-        borderRadius: BorderRadius.circular(100),
-      ),
-      margin: EdgeInsets.only(top: 5, bottom: 5, right: 5, left: 5),
-      child: ListTile(
-        leading: InkWell(
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>CustomProfile(customID: comment.userID)));
-          },
-          child: CircleAvatar(
-              radius: 25.0,
-              backgroundColor: Colors.grey,
-              backgroundImage: comment.avatar.isEmpty
-                  ? AssetImage("assets/default_avatar.jpg")
-                  : Image.memory(imagebytes).image),
-        ),
-        title: Text(
-          comment.firstName + " " + comment.lastName,
-          style: TextStyle(color: Colors.black),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(comment.content, style: TextStyle(color: Colors.black)),
-            SizedBox(height: 6.0),
-            RichText(
-              text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.black54,
-                  ),
-                  text: DateFormat.yMMMMd('en_US')
-                      .add_jm()
-                      .format(DateTime.parse(comment.dateCmt).toLocal())),
+          decoration: BoxDecoration(
+            color: i % 2 == 0 ? Colors.white : Colors.greenAccent,
+            borderRadius: BorderRadius.circular(100),
+          ),
+          margin: EdgeInsets.only(top: 5, bottom: 5, right: 5, left: 5),
+          child: ListTile(
+            leading: InkWell(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        CustomProfile(customID: comment.userID)));
+              },
+              child: CircleAvatar(
+                  radius: 25.0,
+                  backgroundColor: Colors.grey,
+                  backgroundImage: comment.avatar.isEmpty
+                      ? AssetImage("assets/default_avatar.jpg")
+                      : Image.memory(imagebytes).image),
             ),
-          ],
-        ),
-      ),
-    ));
+            title: Text(
+              comment.firstName + " " + comment.lastName,
+              style: TextStyle(color: Colors.black),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(comment.content, style: TextStyle(color: Colors.black)),
+                SizedBox(height: 6.0),
+                RichText(
+                  text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.black54,
+                      ),
+                      text: DateFormat.yMMMMd('en_US')
+                          .add_jm()
+                          .format(DateTime.parse(comment.dateCmt).toLocal())),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 
   _buildCommentTF() {
@@ -187,34 +201,41 @@ class _CommentPage extends State<CommentPage> {
               ),
             ),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 4.0),
-              child: _isPostingCmt?Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.green))):IconButton(
-                icon: Icon(Icons.send),
-                onPressed: () async {
-                  setState(() {
-                    _isPostingCmt=true;
-                  });
-                  FocusScope.of(context).unfocus();
-                  if (_isCommenting) {
-                    CommentResult cmtRS= await CmtRepository().creteComment(widget._idPost,
-                        _commentController.text, UserRepository.getUserID);
-                    _commentController.clear();
-                    setState(() {
-                      _comments.add(Comment(
-                          userID: _owner.userID,
-                          lastName: _owner.lastName,
-                          firstName: _owner.firstName,
-                          avatar: _owner.avatar,
-                          content: cmtRS.content,
-                          dateCmt: DateTime.now().toString(),
-                          commentID: cmtRS.commentID));
-                      _isCommenting = false;
-                      _isPostingCmt=false;
-                    });
-                  }
-                },
-              )
-            ),
+                margin: EdgeInsets.symmetric(horizontal: 4.0),
+                child: _isPostingCmt
+                    ? Center(
+                        child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.red)))
+                    : IconButton(
+                        icon: Icon(Icons.send),
+                        onPressed: () async {
+                          setState(() {
+                            _isPostingCmt = true;
+                          });
+                          FocusScope.of(context).unfocus();
+                          if (_isCommenting) {
+                            CommentResult cmtRS = await CmtRepository()
+                                .creteComment(
+                                    widget._idPost,
+                                    _commentController.text,
+                                    UserRepository.getUserID);
+                            _commentController.clear();
+                            setState(() {
+                              _comments.add(Comment(
+                                  userID: _owner.userID,
+                                  lastName: _owner.lastName,
+                                  firstName: _owner.firstName,
+                                  avatar: _owner.avatar,
+                                  content: cmtRS.content,
+                                  dateCmt: DateTime.now().toString(),
+                                  commentID: cmtRS.commentID));
+                              _isCommenting = false;
+                              _isPostingCmt = false;
+                            });
+                          }
+                        },
+                      )),
           ],
         ),
       ),
@@ -235,7 +256,10 @@ class _CommentPage extends State<CommentPage> {
                     style: TextStyle(color: Colors.white),
                   );
                 else
-                  return Center(child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.pinkAccent)));
+                  return Center(
+                      child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.pinkAccent)));
               }),
         ),
         body: Container(

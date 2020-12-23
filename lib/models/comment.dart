@@ -1,4 +1,3 @@
-
 class Comment {
   String userID;
   String lastName;
@@ -8,9 +7,14 @@ class Comment {
   String content;
   String commentID;
 
-
-  Comment({this.userID, this.lastName, this.firstName, this.avatar, this.dateCmt,
-    this.content, this.commentID});
+  Comment(
+      {this.userID,
+      this.lastName,
+      this.firstName,
+      this.avatar,
+      this.dateCmt,
+      this.content,
+      this.commentID});
 
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
@@ -23,5 +27,4 @@ class Comment {
       commentID: json['commentID'],
     );
   }
-
 }

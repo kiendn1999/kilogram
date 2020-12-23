@@ -27,7 +27,7 @@ class PostPage extends StatefulWidget {
 
 class _PostPage extends State<PostPage> {
   bool _isliked = false;
-  bool _isliking=false;
+  bool _isliking = false;
 
   @override
   void initState() {
@@ -37,7 +37,8 @@ class _PostPage extends State<PostPage> {
   }
 
   _setupIsLiked() async {
-    bool isLiked = await LikeRepository().checkLiked(widget._post1.postID, UserRepository.getUserID);
+    bool isLiked = await LikeRepository()
+        .checkLiked(widget._post1.postID, UserRepository.getUserID);
     setState(() {
       _isliked = isLiked;
     });
@@ -53,25 +54,25 @@ class _PostPage extends State<PostPage> {
 
   _unLike() async {
     setState(() {
-      _isliking=true;
+      _isliking = true;
     });
     await LikeRepository()
         .actionUnLike(widget._post1.postID, UserRepository.getUserID);
     setState(() {
-      _isliking=false;
+      _isliking = false;
       _isliked = false;
     });
   }
 
   _like() async {
     setState(() {
-      _isliking=true;
+      _isliking = true;
     });
     await LikeRepository()
         .actionLike(widget._post1.postID, UserRepository.getUserID);
 
     setState(() {
-      _isliking=false;
+      _isliking = false;
       _isliked = true;
     });
   }
@@ -165,45 +166,60 @@ class _PostPage extends State<PostPage> {
                       ),
                       Row(
                         children: <Widget>[
-                          if(_isliking) Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent)))
-                          else IconButton(
-                            onPressed: _LikeOrUnLike,
-                            icon: _isliked?Icon(
-                              FontAwesome.heart,
-                              color: Colors.redAccent,
-                            ):Icon(
-                              FontAwesome.heart_o,
-                              color: Colors.white,
-                            )
-                          ),
-                          FutureBuilder<List<LikeUser>>(future: LikeRepository().getAllLikeUser(widget._post1.postID),
-                            builder: (context, snapshot){
-                            if(snapshot.hasData)
-                              return InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) => LikePage(snapshot.data)));
-                                  },
-                                  child: RichText(
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                    text: TextSpan(children: [
-                                      TextSpan(
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          text: snapshot.data.length.toString()),
-                                      TextSpan(
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                          ),
-                                          text: " Peoples liked this post"),
-                                    ]),
-                                  ));
-                            else return Center(child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.deepOrange)));
-                            }
-                          )
+                          if (_isliking)
+                            Center(
+                                child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.redAccent)))
+                          else
+                            IconButton(
+                                onPressed: _LikeOrUnLike,
+                                icon: _isliked
+                                    ? Icon(
+                                        FontAwesome.heart,
+                                        color: Colors.redAccent,
+                                      )
+                                    : Icon(
+                                        FontAwesome.heart_o,
+                                        color: Colors.white,
+                                      )),
+                          FutureBuilder<List<LikeUser>>(
+                              future: LikeRepository()
+                                  .getAllLikeUser(widget._post1.postID),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData)
+                                  return InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    LikePage(snapshot.data)));
+                                      },
+                                      child: RichText(
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible,
+                                        text: TextSpan(children: [
+                                          TextSpan(
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              text: snapshot.data.length
+                                                  .toString()),
+                                          TextSpan(
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                              text: " Peoples liked this post"),
+                                        ]),
+                                      ));
+                                else
+                                  return Center(
+                                      child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.deepOrange)));
+                              })
                         ],
                       ),
                       Row(
@@ -215,36 +231,45 @@ class _PostPage extends State<PostPage> {
                             ),
                           ),
                           FutureBuilder<List<Comment>>(
-                            future: CmtRepository().getAllComments(widget._post1.postID),
-                              builder: (context,snapshot){
-                              if(snapshot.hasData)
-                                return InkWell(
-                                    onTap: (){
-                                      Navigator.of(context).push(MaterialPageRoute(
-                                          builder: (context) => CommentPage(widget._post1.postID))).then((value){
-                                            setState(() {
-
-                                            });
-                                      });
-                                    },
-                                    child: RichText(
-                                      softWrap: true,
-                                      overflow: TextOverflow.visible,
-                                      text: TextSpan(children: [
-                                        TextSpan(
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            text: snapshot.data.length.toString()),
-                                        TextSpan(
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                            text: " Comments"),
-                                      ]),
-                                    ));
-                              else return Center(child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.green)));
+                              future: CmtRepository()
+                                  .getAllComments(widget._post1.postID),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData)
+                                  return InkWell(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                                builder: (context) =>
+                                                    CommentPage(
+                                                        widget._post1.postID)))
+                                            .then((value) {
+                                          setState(() {});
+                                        });
+                                      },
+                                      child: RichText(
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible,
+                                        text: TextSpan(children: [
+                                          TextSpan(
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              text: snapshot.data.length
+                                                  .toString()),
+                                          TextSpan(
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                              text: " Comments"),
+                                        ]),
+                                      ));
+                                else
+                                  return Center(
+                                      child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.green)));
                               }),
                         ],
                       ),

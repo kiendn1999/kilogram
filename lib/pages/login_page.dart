@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                     image: AssetImage("assets/background_app.jpg"),
                     fit: BoxFit.cover)),
             child: BlocListener<LoginBloc, LoginState>(listener:
-                (context, state) async{
+                (context, state) async {
               if (state.isFailure) {
                 Scaffold.of(context)
                   ..removeCurrentSnackBar()

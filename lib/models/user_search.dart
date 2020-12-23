@@ -1,16 +1,9 @@
-
-
 class UserSearch {
   String userID;
   String lastName;
   String avatar;
 
-
-  UserSearch({
-    this.userID,
-    this.lastName,
-    this.avatar
-  });
+  UserSearch({this.userID, this.lastName, this.avatar});
 
   factory UserSearch.fromJson(Map<String, dynamic> json) {
     return UserSearch(
@@ -19,5 +12,4 @@ class UserSearch {
       avatar: json['avatar'],
     );
   }
-
 }

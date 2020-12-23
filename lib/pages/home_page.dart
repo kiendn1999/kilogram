@@ -10,23 +10,21 @@ import 'package:kilogram_app/repositories/user_repository.dart';
 import 'createpost_page.dart';
 
 int currentPage = 0;
-class HomePage extends StatefulWidget {
 
+class HomePage extends StatefulWidget {
   final UserRepository _userRepository;
 
   const HomePage({Key key, UserRepository userRepository})
       : _userRepository = userRepository,
         super(key: key);
+
   @override
   State<StatefulWidget> createState() => _HomeStatePage();
-
-
 }
 
-class _HomeStatePage extends State<HomePage>{
-
-
+class _HomeStatePage extends State<HomePage> {
   var _pages;
+
   @override
   void initState() {
     super.initState();
@@ -37,32 +35,29 @@ class _HomeStatePage extends State<HomePage>{
     ];
   }
 
-
-
   var _pageController = PageController();
-
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black87,
-          centerTitle: true,
-          title: Text("Kilogram"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.exit_to_app),
-              onPressed: (){
-                BlocProvider.of<AuthenticationBloc>(context)
-                    .add(AuthenticationLoggedOut());
-              },
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        backgroundColor: Colors.black87,
+        centerTitle: true,
+        title: Text("Kilogram"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () {
+              BlocProvider.of<AuthenticationBloc>(context)
+                  .add(AuthenticationLoggedOut());
+            },
+          ),
+        ],
+      ),
       body: PageView(
         children: _pages,
-        onPageChanged: (i){
+        onPageChanged: (i) {
           setState(() {
             currentPage = i;
           });
@@ -72,10 +67,11 @@ class _HomeStatePage extends State<HomePage>{
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black87,
         currentIndex: currentPage,
-        onTap: (i){
+        onTap: (i) {
           setState(() {
             currentPage = i;
-            _pageController.animateToPage(currentPage, duration: Duration(microseconds: 300), curve: Curves.linear);
+            _pageController.animateToPage(currentPage,
+                duration: Duration(microseconds: 300), curve: Curves.linear);
           });
         },
         type: BottomNavigationBarType.fixed,
@@ -84,22 +80,28 @@ class _HomeStatePage extends State<HomePage>{
         selectedItemColor: Colors.red,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Feather.user, color: Colors.white,),
+            icon: Icon(
+              Feather.user,
+              color: Colors.white,
+            ),
             title: Text("Profile"),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Feather.upload, color: Colors.white,),
+            icon: Icon(
+              Feather.upload,
+              color: Colors.white,
+            ),
             title: Text("Add"),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Feather.search,color: Colors.white,),
+            icon: Icon(
+              Feather.search,
+              color: Colors.white,
+            ),
             title: Text("Search"),
           ),
         ],
-
-
       ),
-
     );
   }
 }

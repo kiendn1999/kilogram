@@ -26,7 +26,7 @@ class AuthenticationBloc
   //AuthenticationLoggedOut
   Stream<AuthenticationState> _mapAuthenticationLoggedOutInToState() async* {
     yield AuthenticationFailure();
-    _userRepository.isLogined=false;
+    _userRepository.isLogined = false;
     //_userRepository.signOut();
   }
 
@@ -37,7 +37,7 @@ class AuthenticationBloc
 
   // AuthenticationStarted
   Stream<AuthenticationState> _mapAuthenticationStartedToState() async* {
-    final isSignedIn =  _userRepository.isLogined;
+    final isSignedIn = _userRepository.isLogined;
     if (isSignedIn) {
       //final  firebaseUser = await _userRepository.getUser();
       yield AuthenticationSuccess(/*firebaseUser*/);

@@ -17,24 +17,20 @@ class _SearchPageState extends State<SearchPage> {
   Future<List<UserSearch>> _users;
 
   _buildUserTile(UserSearch user) {
-    Uint8List imagebytes = base64Decode(
-        user.avatar);
+    Uint8List imagebytes = base64Decode(user.avatar);
     return ListTile(
       leading: CircleAvatar(
           radius: 20.0,
-          backgroundImage: user.avatar.length==0
+          backgroundImage: user.avatar.length == 0
               ? AssetImage('assets/default_avatar.jpg')
               : Image.memory(imagebytes).image),
       title: Text(user.lastName, style: TextStyle(color: Colors.white)),
-       onTap: () =>
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) =>
-                  CustomProfile(customID: user.userID
-                  ),
-            ),
-          ),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CustomProfile(customID: user.userID),
+        ),
+      ),
     );
   }
 
@@ -96,12 +92,15 @@ class _SearchPageState extends State<SearchPage> {
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return Center(
-                          child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.green)),
+                          child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.green)),
                         );
                       }
                       if (snapshot.data.length == 0)
                         return Center(
-                          child: Text('No users found! Please try again.', style: TextStyle(color: Colors.white)),
+                          child: Text('No users found! Please try again.',
+                              style: TextStyle(color: Colors.white)),
                         );
                       return ListView.builder(
                         itemCount: snapshot.data.length,

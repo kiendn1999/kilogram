@@ -126,7 +126,8 @@ class _CreatePostPage extends State<CreatePostPage> {
 
     final bytes = _image.readAsBytesSync();
     _imageBase64Encode = base64Encode(bytes);
-    await PostRepository().createAPostInUser(_imageBase64Encode, _caption, _user.userID);
+    await PostRepository()
+        .createAPostInUser(_imageBase64Encode, _caption, _user.userID);
     setState(() {
       _caption = '';
       _image = null;
@@ -149,13 +150,17 @@ class _CreatePostPage extends State<CreatePostPage> {
           ),
         ),
         actions: <Widget>[
-         if(_isLoading==true)Center(child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.green)))
-          else  IconButton(
-           icon: Icon(Icons.add),
-           onPressed: () {
-             _submit(context);
-           },
-         ),
+          if (_isLoading == true)
+            Center(
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.green)))
+          else
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                _submit(context);
+              },
+            ),
         ],
       ),
       body: Container(

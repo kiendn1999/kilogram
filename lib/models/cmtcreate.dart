@@ -1,8 +1,6 @@
-
 class CommentResult {
   String content;
   String commentID;
-
 
   CommentResult({this.content, this.commentID});
 
@@ -12,5 +10,4 @@ class CommentResult {
       commentID: json['_id'],
     );
   }
-
 }

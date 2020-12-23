@@ -2,7 +2,6 @@ class FollowCount {
   int totalFollower;
   int totalFollowing;
 
-
   FollowCount({this.totalFollower, this.totalFollowing});
 
   factory FollowCount.fromJson(Map<String, dynamic> json) {
@@ -11,5 +10,4 @@ class FollowCount {
       totalFollowing: json['totalFollowing'],
     );
   }
-
 }

@@ -16,7 +16,8 @@ import 'package:kilogram_app/repositories/post_repository.dart';
 import 'followers_page.dart';
 import 'post_page.dart';
 
-bool isUpdate=false;
+bool isUpdate = false;
+
 class Profile extends StatefulWidget {
   final UserRepository _userRepository;
 
@@ -31,7 +32,7 @@ class Profile extends StatefulWidget {
 class _Profile extends State<Profile> {
   static const double _endReachedThreshold = 200;
   static const int _itemsPerPage = 12;
-  bool refresh=false;
+  bool refresh = false;
 
   final ScrollController _controller = ScrollController();
 
@@ -40,8 +41,8 @@ class _Profile extends State<Profile> {
   bool _loading = true;
   bool _canLoadMore = true;
   int _totalPost;
-
-
+  bool _isDeleting = false;
+  int _isPicked;
 
   @override
   void initState() {
@@ -52,21 +53,22 @@ class _Profile extends State<Profile> {
   }
 
   _gettotalPost() async {
-    User owner=await widget._userRepository.getInfoUser();
-    _totalPost=owner.totalPosts;
+    User owner = await widget._userRepository.getInfoUser();
+    _totalPost = owner.totalPosts;
   }
 
   Future<void> _getPosts() async {
     _loading = true;
 
-    final newPosts = await PostRepository().getAllPostsinUser(UserRepository.getUserID, _pageKey);
+    final newPosts = await PostRepository()
+        .getAllPostsinUser(UserRepository.getUserID, _pageKey);
 
     setState(() {
       _posts.addAll(newPosts);
 
       _pageKey++;
 
-      if (newPosts.length < _itemsPerPage ) {
+      if (newPosts.length < _itemsPerPage) {
         _canLoadMore = false;
         return false;
       }
@@ -76,9 +78,10 @@ class _Profile extends State<Profile> {
   }
 
   void _onScroll() {
-    if (!_controller.hasClients || _loading ) return;
+    if (!_controller.hasClients || _loading) return;
 
-    final thresholdReached = _controller.position.extentAfter < _endReachedThreshold;
+    final thresholdReached =
+        _controller.position.extentAfter < _endReachedThreshold;
 
     if (thresholdReached) {
       _getPosts();
@@ -94,7 +97,7 @@ class _Profile extends State<Profile> {
       child: SingleChildScrollView(
           controller: _controller,
           child: FutureBuilder<User>(
-            future:UserRepository().getInfoUser(),
+            future: UserRepository().getInfoUser(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 Uint8List imagebytes = base64Decode(snapshot.data.avatar);
@@ -105,10 +108,10 @@ class _Profile extends State<Profile> {
                       height: 290,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.purpleAccent, Colors.pinkAccent],
-                          )),
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.purpleAccent, Colors.pinkAccent],
+                      )),
                       child: Container(
                         width: double.infinity,
                         height: double.infinity,
@@ -137,8 +140,8 @@ class _Profile extends State<Profile> {
                                   image: DecorationImage(
                                     fit: BoxFit.cover,
                                     image: snapshot.data.avatar.isEmpty
-                                        ? AssetImage("assets/default_avatar.jpg")
-
+                                        ? AssetImage(
+                                            "assets/default_avatar.jpg")
                                         : Image.memory(imagebytes).image,
                                   ),
                                 ),
@@ -146,25 +149,31 @@ class _Profile extends State<Profile> {
 
                               //username
                               Text(
-                                snapshot.data.firstName + ' ' + snapshot.data.lastName,
-                                style: TextStyle(fontSize: 22, color: Colors.white),
+                                snapshot.data.firstName +
+                                    ' ' +
+                                    snapshot.data.lastName,
+                                style: TextStyle(
+                                    fontSize: 22, color: Colors.white),
                               ),
                               SizedBox(
                                 height: 10,
                               ),
 
                               RaisedButton(
-                                onPressed: ()  {
-                                    Navigator.push(context,MaterialPageRoute(
-                                      builder: (context) => EditProfile(
-                                         snapshot.data))).then((value) {
-                                           setState(() {
-                                           });
-                                    });
+                                onPressed: () {
+                                  Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditProfile(snapshot.data)))
+                                      .then((value) {
+                                    setState(() {});
+                                  });
                                 },
                                 color: Colors.blue,
                                 shape: new RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(10)),
+                                    borderRadius:
+                                        new BorderRadius.circular(10)),
                                 child: Text(
                                   'Edit Profile',
                                   style: TextStyle(color: Colors.white),
@@ -176,7 +185,8 @@ class _Profile extends State<Profile> {
                                 clipBehavior: Clip.antiAlias,
                                 color: Colors.black87,
                                 shape: new RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(10)),
+                                    borderRadius:
+                                        new BorderRadius.circular(10)),
                                 elevation: 8,
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -197,7 +207,8 @@ class _Profile extends State<Profile> {
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            Text(_totalPost.toString(),
+                                            Text(
+                                              _totalPost.toString(),
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 20,
@@ -210,23 +221,22 @@ class _Profile extends State<Profile> {
                                       FutureBuilder<List<String>>(
                                           future: FollowRepository()
                                               .getFollowers(
-                                              snapshot.data.userID),
+                                                  snapshot.data.userID),
                                           builder: (context, snapshot1) {
                                             return Expanded(
                                               child: InkWell(
                                                 onTap: () {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
+                                                  Navigator.of(context)
+                                                      .push(MaterialPageRoute(
                                                           builder: (context) =>
                                                               FollowersPage(
                                                                   isActionFollowers:
-                                                                  true,
+                                                                      true,
                                                                   idFollowers:
-                                                                  snapshot1
-                                                                      .data))).then((value) {
-                                                                        setState(() {
-
-                                                                        });
+                                                                      snapshot1
+                                                                          .data)))
+                                                      .then((value) {
+                                                    setState(() {});
                                                   });
                                                 },
                                                 child: Column(
@@ -240,27 +250,28 @@ class _Profile extends State<Profile> {
                                                         color: Colors.white,
                                                         fontSize: 22,
                                                         fontWeight:
-                                                        FontWeight.bold,
+                                                            FontWeight.bold,
                                                       ),
                                                     ),
                                                     if (snapshot1.hasData)
                                                       Text(
-                                                        snapshot1
-                                                            .data.length
+                                                        snapshot1.data.length
                                                             .toString(),
                                                         style: TextStyle(
-                                                          color:
-                                                          Colors.white,
+                                                          color: Colors.white,
                                                           fontSize: 20,
                                                           fontWeight:
-                                                          FontWeight
-                                                              .w400,
+                                                              FontWeight.w400,
                                                         ),
                                                       )
                                                     else
                                                       Center(
-                                                          child:
-                                                          CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.redAccent)))
+                                                          child: CircularProgressIndicator(
+                                                              valueColor:
+                                                                  AlwaysStoppedAnimation<
+                                                                          Color>(
+                                                                      Colors
+                                                                          .redAccent)))
                                                   ],
                                                 ),
                                               ),
@@ -269,23 +280,22 @@ class _Profile extends State<Profile> {
                                       FutureBuilder<List<String>>(
                                           future: FollowRepository()
                                               .getFollowings(
-                                              snapshot.data.userID),
+                                                  snapshot.data.userID),
                                           builder: (context, snapshot2) {
                                             return Expanded(
                                               child: InkWell(
                                                 onTap: () {
-                                                  Navigator.of(context).push(
-                                                      MaterialPageRoute(
+                                                  Navigator.of(context)
+                                                      .push(MaterialPageRoute(
                                                           builder: (context) =>
                                                               FollowersPage(
                                                                   isActionFollowers:
-                                                                  false,
+                                                                      false,
                                                                   idFollowers:
-                                                                  snapshot2
-                                                                      .data))).then((value) {
-                                                                        setState(() {
-
-                                                                        });
+                                                                      snapshot2
+                                                                          .data)))
+                                                      .then((value) {
+                                                    setState(() {});
                                                   });
                                                 },
                                                 child: Column(
@@ -299,27 +309,28 @@ class _Profile extends State<Profile> {
                                                         color: Colors.white,
                                                         fontSize: 22,
                                                         fontWeight:
-                                                        FontWeight.bold,
+                                                            FontWeight.bold,
                                                       ),
                                                     ),
                                                     if (snapshot2.hasData)
                                                       Text(
-                                                        snapshot2
-                                                            .data.length
+                                                        snapshot2.data.length
                                                             .toString(),
                                                         style: TextStyle(
-                                                          color:
-                                                          Colors.white,
+                                                          color: Colors.white,
                                                           fontSize: 20,
                                                           fontWeight:
-                                                          FontWeight
-                                                              .w400,
+                                                              FontWeight.w400,
                                                         ),
                                                       )
                                                     else
                                                       Center(
-                                                          child:
-                                                          CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.green)))
+                                                          child: CircularProgressIndicator(
+                                                              valueColor:
+                                                                  AlwaysStoppedAnimation<
+                                                                          Color>(
+                                                                      Colors
+                                                                          .green)))
                                                   ],
                                                 ),
                                               ),
@@ -339,7 +350,7 @@ class _Profile extends State<Profile> {
                         child: GridView.builder(
                             shrinkWrap: true,
                             gridDelegate:
-                            SliverGridDelegateWithMaxCrossAxisExtent(
+                                SliverGridDelegateWithMaxCrossAxisExtent(
                               //crossAxisCount: 3,
                               maxCrossAxisExtent: 150,
                               crossAxisSpacing: 0.2,
@@ -349,10 +360,14 @@ class _Profile extends State<Profile> {
                             scrollDirection: Axis.vertical,
                             itemCount: _posts.length,
                             itemBuilder: (context, i) {
-                              Uint8List imagebytes = base64Decode(
-                                  _posts[i].postImage);
+                              Uint8List imagebytes =
+                                  base64Decode(_posts[i].postImage);
+                              if (_isDeleting && i == _isPicked)
+                                return Center(
+                                    child: CircularProgressIndicator());
                               return InkWell(
-                                onLongPress: (){
+                                onLongPress: () {
+                                  _isPicked = i;
                                   showAnimatedDialog(
                                     context: context,
                                     barrierDismissible: true,
@@ -360,46 +375,52 @@ class _Profile extends State<Profile> {
                                       return ClassicGeneralDialogWidget(
                                         titleText: 'Delete post ?',
                                         contentText:
-                                        "Would you like to cotinue deleting this post ?",
+                                            "Would you like to cotinue deleting this post ?",
                                         onPositiveClick: () async {
-                                          await PostRepository().deleteAPost(_posts[i].postID);
                                           Navigator.of(context).pop();
+                                          setState(() {
+                                            _isDeleting = true;
+                                          });
+                                          await PostRepository()
+                                              .deleteAPost(_posts[i].postID);
                                           setState(() {
                                             _totalPost--;
                                             _posts.remove(_posts[i]);
                                           });
+                                          _isDeleting = false;
                                         },
                                         onNegativeClick: () {
                                           Navigator.of(context).pop();
                                         },
                                       );
                                     },
-                                    animationType: DialogTransitionType.slideFromTop,
+                                    animationType:
+                                        DialogTransitionType.slideFromTop,
                                     curve: Curves.fastOutSlowIn,
                                     duration: Duration(seconds: 1),
                                   );
                                 },
                                 onTap: () {
-                                   Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PostPage(_posts[i],snapshot.data)));
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          PostPage(_posts[i], snapshot.data)));
                                 },
                                 child: Container(
                                     color: Colors.black87,
                                     child: Image(
-                                      image: Image.memory(imagebytes)
-                                          .image,
+                                      image: Image.memory(imagebytes).image,
                                     )),
                               );
                             })),
                     Container(
                       child: _canLoadMore
                           ? Container(
-                        padding: EdgeInsets.only(bottom: 16),
-                        alignment: Alignment.center,
-                        child: CircularProgressIndicator(valueColor:  AlwaysStoppedAnimation<Color>(Colors.yellowAccent)),
-                      )
+                              padding: EdgeInsets.only(bottom: 16),
+                              alignment: Alignment.center,
+                              child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.yellowAccent)),
+                            )
                           : SizedBox(),
                     ),
                   ],

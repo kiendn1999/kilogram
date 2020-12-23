@@ -6,7 +6,7 @@ import 'serveroperations.dart';
 
 class UserRepository {
   bool isLogined = false;
-  static String  getUserID;
+  static String getUserID;
   static String token;
 
   UserRepository() {}
@@ -79,14 +79,17 @@ class UserRepository {
 
     if (response.statusCode == 200) {
       var userObjsJson = jsonDecode(response.body)['found'] as List;
-      List<UserSearch> Users = userObjsJson.map((userJson) => UserSearch.fromJson(userJson)).toList();
+      List<UserSearch> Users = userObjsJson
+          .map((userJson) => UserSearch.fromJson(userJson))
+          .toList();
 
       return Users;
     } else
       return jsonDecode(response.body)['error']['message'];
   }
 
-  Future<String> updateUser( String firstName, String lastName, String email, String avatar, String userID) async {
+  Future<String> updateUser(String firstName, String lastName, String email,
+      String avatar, String userID) async {
     final response = await ServerOperation().patchDataToServer(
         'https://leanhhuy.herokuapp.com/users/$userID',
         jsonEncode(<String, String>{
@@ -96,9 +99,8 @@ class UserRepository {
           'avatar': avatar,
         }));
     if (response.statusCode == 200) {
-
       return 'success';
-    }else throw Exception('Failed to update User');
-
+    } else
+      throw Exception('Failed to update User');
   }
 }

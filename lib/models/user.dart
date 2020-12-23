@@ -1,15 +1,14 @@
-
 class User {
   String userID;
   String lastName;
   String firstName;
+
   //String userImage;
   String email;
   int followerCount;
   int followeeCount;
   int totalPosts;
   String avatar;
-
 
   User({
     this.userID,
@@ -19,7 +18,7 @@ class User {
     this.email,
     this.avatar,
     this.totalPosts,
-});
+  });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
@@ -31,5 +30,4 @@ class User {
       totalPosts: json['totalPosts'],
     );
   }
-
 }

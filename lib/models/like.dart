@@ -14,5 +14,4 @@ class LikeUser {
       avatar: json['avatar'],
     );
   }
-
 }

@@ -31,13 +31,13 @@ class SignUpButton1 extends StatelessWidget {
               color: Colors.orangeAccent,
               fontWeight: FontWeight.bold),
         ),
-        onPressed: (){
+        onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) {
               return BlocProvider<RegisterBloc>(
-                  create: (context) => RegisterBloc(userRepository: _userRepository),
-                  child: SignUpPage(userRepository: _userRepository)
-              );
+                  create: (context) =>
+                      RegisterBloc(userRepository: _userRepository),
+                  child: SignUpPage(userRepository: _userRepository));
             }),
           );
         },

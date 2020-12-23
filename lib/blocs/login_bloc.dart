@@ -1,4 +1,3 @@
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kilogram_app/events/login_event.dart';
 import 'package:kilogram_app/repositories/user_repository.dart';
@@ -35,7 +34,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> _mapLoginWithCredentialsPressedToState(
       {String email, String password}) async* {
     yield LoginState.loading();
-    if(await _userRepository.checkLoginCredentials(email, password)=="true") {
+    if (await _userRepository.checkLoginCredentials(email, password) ==
+        "true") {
       yield LoginState.success();
     } else {
       yield LoginState.failure();
