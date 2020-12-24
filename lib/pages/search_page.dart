@@ -24,7 +24,7 @@ class _SearchPageState extends State<SearchPage> {
           backgroundImage: user.avatar.length == 0
               ? AssetImage('assets/default_avatar.jpg')
               : Image.memory(imagebytes).image),
-      title: Text(user.lastName, style: TextStyle(color: Colors.white)),
+      title: Text(user.firstName+" "+user.lastName, style: TextStyle(color: Colors.white)),
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
