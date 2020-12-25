@@ -40,7 +40,6 @@ class _Profile extends State<Profile> {
   int _pageKey = 1;
   bool _loading = true;
   bool _canLoadMore = true;
-  int _totalPost;
   bool _isDeleting = false;
   int _isPicked;
 
@@ -49,13 +48,8 @@ class _Profile extends State<Profile> {
     super.initState();
     _controller.addListener(_onScroll);
     _getPosts();
-    _gettotalPost();
   }
 
-  _gettotalPost() async {
-    User owner = await widget._userRepository.getInfoUser();
-    _totalPost = owner.totalPosts;
-  }
 
   Future<void> _getPosts() async {
     _loading = true;
@@ -208,7 +202,7 @@ class _Profile extends State<Profile> {
                                               ),
                                             ),
                                             Text(
-                                              _totalPost.toString(),
+                                              snapshot.data.totalPosts.toString(),
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 20,
@@ -384,7 +378,6 @@ class _Profile extends State<Profile> {
                                           await PostRepository()
                                               .deleteAPost(_posts[i].postID);
                                           setState(() {
-                                            _totalPost--;
                                             _posts.remove(_posts[i]);
                                           });
                                           _isDeleting = false;

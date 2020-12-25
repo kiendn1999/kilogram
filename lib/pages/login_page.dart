@@ -162,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                       autocorrect: false,
                       validator: (_) {
                         return !state.isPasswordValid
-                            ? 'Invalid Password'
+                            ? "least 8 characters, doesn't contain special characters"
                             : null;
                       },
                     ),

@@ -237,7 +237,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         autocorrect: false,
                         validator: (_) {
                           return !state.isPasswordValid
-                              ? 'Invalid Password'
+                              ? "least 8 characters, doesn't contain special characters"
                               : null;
                         },
                       ),
