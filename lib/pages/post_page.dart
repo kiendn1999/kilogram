@@ -241,7 +241,7 @@ class _PostPage extends State<PostPage> {
                                             .push(MaterialPageRoute(
                                                 builder: (context) =>
                                                     CommentPage(
-                                                        widget._post1.postID)))
+                                                        snapshot.data.length,widget._post1.postID)))
                                             .then((value) {
                                           setState(() {});
                                         });

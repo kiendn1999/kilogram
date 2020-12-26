@@ -12,7 +12,7 @@ class SignUpButton2 extends StatelessWidget {
     return ButtonTheme(
       height: 45,
       child: RaisedButton(
-        color: Colors.black12,
+        color: Colors.blueAccent,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
             side: BorderSide(color: Colors.orangeAccent)),

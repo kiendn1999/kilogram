@@ -14,9 +14,9 @@ import 'package:kilogram_app/repositories/user_repository.dart';
 import 'custom_profile.dart';
 
 class CommentPage extends StatefulWidget {
+  int _totalCmts;
   String _idPost;
-
-  CommentPage(this._idPost);
+  CommentPage(this._totalCmts,this._idPost);
 
   @override
   _CommentPage createState() => _CommentPage();
@@ -111,6 +111,7 @@ class _CommentPage extends State<CommentPage> {
                   });
                   await CmtRepository().deleteACmt(comment.commentID);
                   setState(() {
+                    widget._totalCmts--;
                     _comments.remove(comment);
                     _isDeleting = false;
                   });
@@ -222,6 +223,7 @@ class _CommentPage extends State<CommentPage> {
                                     UserRepository.getUserID);
                             _commentController.clear();
                             setState(() {
+                              widget._totalCmts++;
                               _comments.add(Comment(
                                   userID: _owner.userID,
                                   lastName: _owner.lastName,
@@ -247,20 +249,10 @@ class _CommentPage extends State<CommentPage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.black87,
-          title: FutureBuilder<List<Comment>>(
-              future: CmtRepository().getAllComments(widget._idPost),
-              builder: (context, snapshot) {
-                if (snapshot.hasData)
-                  return Text(
-                    snapshot.data.length.toString() + ' Comments',
-                    style: TextStyle(color: Colors.white),
-                  );
-                else
-                  return Center(
-                      child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.pinkAccent)));
-              }),
+          title: Text(
+            widget._totalCmts.toString() + ' Comments',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: Container(
           color: Colors.black87,
@@ -287,7 +279,10 @@ class _CommentPage extends State<CommentPage> {
                                 ? Container(
                                     padding: EdgeInsets.only(bottom: 16),
                                     alignment: Alignment.center,
-                                    child: CircularProgressIndicator(),
+                                    child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<
+                                        Color>(
+                                        Colors
+                                            .pink)),
                                   )
                                 : SizedBox(),
                           ),
